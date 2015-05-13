@@ -6,7 +6,7 @@ applications by allowing querying on references to certain URI's.
 
 
 .. image:: https://travis-ci.org/OnroerendErfgoed/pyramid_urireferencer.png?branch=master
-        :target: https://travis-ci.org/OnroerendErfgoed/pyramid_urireferencerr
+        :target: https://travis-ci.org/OnroerendErfgoed/pyramid_urireferencer
 .. image:: https://coveralls.io/repos/OnroerendErfgoed/pyramid_urireferencer/badge.png?branch=master
         :target: https://coveralls.io/r/OnroerendErfgoed/pyramid_urireferencer
 
