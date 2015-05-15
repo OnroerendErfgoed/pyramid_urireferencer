@@ -21,9 +21,9 @@ class ViewTests(unittest.TestCase):
         r = _add_referencer(registry)
         self.assertEqual(get_referencer(registry), r)
 
-    def test_add_get_referencer_error(self):
+    def test_add_get_referencer_without_config(self):
         registry = self.config.registry
-        self.assertRaises(NotImplementedError, _add_referencer, registry)
+        self.assertRaises(KeyError, _add_referencer, registry)
 
     def test_is_referenced(self):
         uri = 'http://id.erfgoed.net/foobar/2'
