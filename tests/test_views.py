@@ -25,6 +25,12 @@ class ViewTests(unittest.TestCase):
         registry = self.config.registry
         self.assertRaises(KeyError, _add_referencer, registry)
 
+    def test_add_referencer(self):
+        self.config.registry.settings['urireferencer.registry_url'] = 'http://my.registry.org'
+        self.config.registry.settings['urireferencer.referencer'] = 'test_views.TestReferencer'
+        ref = _add_referencer(self.config.registry)
+        self.assertIsInstance(ref, TestReferencer)
+
     def test_is_referenced(self):
         uri = 'http://id.erfgoed.net/foobar/2'
         base_uri = 'http://id.erfgoed.net/foobar'
