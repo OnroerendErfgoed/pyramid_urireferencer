@@ -26,18 +26,17 @@ def _add_referencer(registry):
     referencer = registry.queryUtility(IReferencer)
     if referencer is not None:
         return referencer
-    try:
-        ref = registry.settings['restregistry.referencer']
-        url = registry.settings['restregistry.registry_url']
-        r = DottedNameResolver()
-        registry.registerUtility(r.resolve(ref)(url), IReferencer)
-        return registry.queryUtility(IReferencer)
-    except KeyError:
-        raise NotImplementedError("De Referencer-class kon niet worden opgehaald.")
+    ref = registry.settings['urireferencer.referencer']
+    url = registry.settings['urireferencer.registry_url']
+    r = DottedNameResolver()
+    registry.registerUtility(r.resolve(ref)(url), IReferencer)
+    return registry.queryUtility(IReferencer)
 
 def get_referencer(registry):
     """
     Get the referencer class
+
+    :rtype: pyramid_urireferencer.referencer.Referencer
     """
     #Argument might be a config or request
     regis = getattr(registry, 'registry', None)
