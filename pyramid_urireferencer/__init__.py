@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from pyramid.config import Configurator
 from pyramid.path import (
     DottedNameResolver
@@ -7,8 +9,6 @@ from .referencer import Referencer
 
 class IReferencer(Interface):
     pass
-
-registry_url=None
 
 def includeme(config):
     """this function adds some configuration for the application"""
