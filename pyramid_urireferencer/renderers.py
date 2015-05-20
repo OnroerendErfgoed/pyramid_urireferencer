@@ -23,23 +23,18 @@ def registry_adapter(obj, request):
         'success': obj.success,
         'has_references': obj.has_references,
         'count': obj.count,
-        'applications': [
-            {
-                'title': a.title,
-                'uri': a.uri,
-                'url': a.url,
-                'success': a.success,
-                'has_references': a.has_references,
-                'count': a.count,
-                'items': [
-                    {
-                        'uri': i.uri,
-                        'title': i.title
-                    } for i in a.items
-                ]
-
-            } for a in obj.applications
-        ]
+        'applications': [{
+            'title': a.title,
+            'uri': a.uri,
+            'url': a.url,
+            'success': a.success,
+            'has_references': a.has_references,
+            'count': a.count,
+            'items': [{
+                'uri': i.uri,
+                'title': i.title
+            } for i in a.items]
+        } for a in obj.applications]
     }
 
 def application_adapter(obj, request):
@@ -56,12 +51,10 @@ def application_adapter(obj, request):
         'success': obj.success,
         'has_references': obj.has_references,
         'count': obj.count,
-        'items': [
-            {
-                'uri': i.uri,
-                'title': i.title
-            } for i in obj.items
-        ]
+        'items': [{
+            'uri': i.uri,
+            'title': i.title
+        } for i in obj.items]
     }
 
 json_renderer.add_adapter(RegistryResponse, registry_adapter)
