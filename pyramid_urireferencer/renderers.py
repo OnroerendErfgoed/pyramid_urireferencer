@@ -33,8 +33,8 @@ def registry_adapter(obj, request):
             'items': [{
                 'uri': i.uri,
                 'title': i.title
-            } for i in a.items]
-        } for a in obj.applications]
+            } for i in a.items] if a.items is not None else None
+        } for a in obj.applications] if obj.applications is not None else None
     }
 
 def application_adapter(obj, request):
@@ -54,7 +54,7 @@ def application_adapter(obj, request):
         'items': [{
             'uri': i.uri,
             'title': i.title
-        } for i in obj.items]
+        } for i in obj.items] if obj.items is not None else None
     }
 
 json_renderer.add_adapter(RegistryResponse, registry_adapter)

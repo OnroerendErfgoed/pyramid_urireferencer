@@ -42,6 +42,6 @@ class Referencer:
             return RegistryResponse.load_from_json(r.json())
         except Exception as e:
             log.error(e)
-            return RegistryResponse(uri, False, False, 0, [])
+            return RegistryResponse(uri, False, None, None, None)
 
 
