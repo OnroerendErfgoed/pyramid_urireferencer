@@ -34,7 +34,8 @@ class ViewTests(unittest.TestCase):
     def test_is_referenced(self):
         uri = 'http://id.erfgoed.net/foobar/2'
         url = 'http://localhost:6543'
-        reg_response_success_ref1 = RegistryResponse(uri, True, False, 0, []).__json__(None)
+        from pyramid_urireferencer.renderers import registry_adapter
+        reg_response_success_ref1 = registry_adapter(RegistryResponse(uri, True, False, 0, []), {})
 
         referencer = TestReferencer(url)
         self.assertIsNone(referencer.references(uri))

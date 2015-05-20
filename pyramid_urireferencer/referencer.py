@@ -2,6 +2,10 @@
 
 import abc
 import requests
+
+import logging
+log = logging.getLogger(__name__)
+
 from .models import RegistryResponse
 
 
@@ -36,7 +40,8 @@ class Referencer:
             url = self.registry_url + '/references?uri=' + uri
             r = requests.get(url)
             return RegistryResponse.load_from_json(r.json())
-        except:
+        except Exception as e:
+            log.error(e)
             return RegistryResponse(uri, False, None, None, None)
 
 
