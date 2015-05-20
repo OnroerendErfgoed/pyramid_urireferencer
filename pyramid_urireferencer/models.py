@@ -3,9 +3,8 @@
 import json
 
 class RegistryResponse:
-    def __init__(self, uri, base_uri, success, has_references, count, applications):
+    def __init__(self, uri, success, has_references, count, applications):
             self.uri = uri
-            self.base_uri = base_uri
             self.success = success
             self.has_references = has_references
             self.count = count
@@ -17,7 +16,6 @@ class RegistryResponse:
                 {
                     'success': self.success,
                     'has_references': self.has_references,
-                    'base_uri': self.base_uri,
                     'count': self.count,
                     'applications': self.applications
                 }
@@ -32,12 +30,11 @@ class RegistryResponse:
     @staticmethod
     def load_from_json(data):
         try:
-            r = RegistryResponse(None, None, None, None, None, None)
+            r = RegistryResponse(None, None, None, None, None)
             if isinstance(data, str):
                 data = json.loads(data)
             response = data['response']
             r.uri = data['request']['uri']
-            r.base_uri = response['base_uri']
             r.success = response['success']
             r.has_references = response['has_references']
             r.count = response['count']

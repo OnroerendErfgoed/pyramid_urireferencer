@@ -37,6 +37,6 @@ class Referencer:
             r = requests.get(url)
             return RegistryResponse.load_from_json(r.json())
         except:
-            return RegistryResponse(uri, None, False, None, None, None)
+            return RegistryResponse(uri, False, None, None, None)
 
 
