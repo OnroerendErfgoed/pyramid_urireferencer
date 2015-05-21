@@ -3,7 +3,7 @@
 import json
 
 
-class RegistryResponse
+class RegistryResponse:
     '''
     Represents what the registry will send back to a client when asked if
     a certain uri is used somewhere.
