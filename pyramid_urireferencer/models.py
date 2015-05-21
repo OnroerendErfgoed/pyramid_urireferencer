@@ -52,11 +52,6 @@ class Item:
         self.title = title
         self.uri = uri
 
-    def __json__(self, request):
-        return {
-            'name': self.title,
-            'uri': self.uri
-        }
     @staticmethod
     def load_from_json(data):
         r = Item(None, None)
