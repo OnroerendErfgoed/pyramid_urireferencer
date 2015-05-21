@@ -17,7 +17,7 @@ def includeme(config):
     config.add_route('references', '/references')
     _add_referencer(config.registry)
     # config.add_directive('referencer', referencer)
-    config.scan('referencesplugin')
+    config.scan()
 
 def _add_referencer(registry):
     """

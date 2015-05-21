@@ -15,19 +15,6 @@ applications by allowing querying on references to certain URI's.
 .. image:: https://badge.fury.io/py/pyramid_urireferencer.png
         :target: http://badge.fury.io/py/pyramid_urireferencer
 
-Building the docs
------------------
-
-More information about this library can be found in `docs`. The docs can be
-built using `Sphinx <http://sphinx-doc.org>`_.
-
-Please make sure you have installed Sphinx in the same environment where
-pyramid_urireferencer is present.
-
-.. code-block:: bash
-
-    # activate your virtual env
-    $ pip install -r requirements-dev.txt
-    $ python setup.py develop
-    $ cd docs
-    $ make html
+Please consult the documentatation for `UriRegistry
+<http://uriregistry.readthedocs.org/en/latest/>` for more information on how
+to use this library.
