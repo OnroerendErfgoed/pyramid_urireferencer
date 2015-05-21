@@ -7,7 +7,7 @@ class RegistryResponse:
     '''
     Represents what the registry will send back to a client when asked if
     a certain uri is used somewhere.
-    ''':
+    '''
     def __init__(self, query_uri, success, has_references, count, applications):
             self.query_uri = query_uri
             self.success = success
