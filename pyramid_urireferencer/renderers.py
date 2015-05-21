@@ -19,7 +19,7 @@ def registry_adapter(obj, request):
     :rtype: :class:`dict`
     '''
     return {
-        'query_uri': obj.uri,
+        'query_uri': obj.query_uri,
         'success': obj.success,
         'has_references': obj.has_references,
         'count': obj.count,
