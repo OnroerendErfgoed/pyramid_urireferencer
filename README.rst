@@ -10,11 +10,9 @@ applications by allowing querying on references to certain URI's.
 .. image:: https://coveralls.io/repos/OnroerendErfgoed/pyramid_urireferencer/badge.png?branch=master
         :target: https://coveralls.io/r/OnroerendErfgoed/pyramid_urireferencer
 
-.. image:: https://readthedocs.org/projects/pyramid_urireferencer/badge/?version=latest
-        :target: https://readthedocs.org/projects/pyramid_urireferencer/?badge=latest
 .. image:: https://badge.fury.io/py/pyramid_urireferencer.png
         :target: http://badge.fury.io/py/pyramid_urireferencer
 
 Please consult the documentatation for `UriRegistry
-<http://uriregistry.readthedocs.org/en/latest/>` for more information on how
+<http://uriregistry.readthedocs.org/en/latest/>`_ for more information on how
 to use this library.
