@@ -20,7 +20,7 @@ class TestRegistryResponse:
                 ApplicationResponse(
                     'Zotskapp',
                     'http://zotskapp.be/',
-                    'http://zotskap.be',
+                    'http://zotskap.be/references',
                     True,
                     True,
                     1,
@@ -72,14 +72,14 @@ class TestApplicationResponse:
         ar = ApplicationResponse(
             'Zotskapp',
             'http://zotskapp.be',
-            'http://zotskapp.be/',
+            'http://zotskapp.be/references',
             True,
             True,
             1,
             [Item('Red with dots.', 'http://zotskapp.be/redwithdots')]
         )
         assert ar.uri == 'http://zotskapp.be'
-        assert ar.url == 'http://zotskapp.be/'
+        assert ar.service_url == 'http://zotskapp.be/references'
         assert ar.success
         assert ar.has_references
         assert ar.count == 1
@@ -89,7 +89,7 @@ class TestApplicationResponse:
         data = {
             'title': 'Zotskapp',
             'uri': 'http://zotskapp.be',
-            'url': 'http://zotskapp.be/',
+            'service_url': 'http://zotskapp.be/references',
             'success': True,
             'has_references': True,
             'count': 1,
@@ -101,7 +101,7 @@ class TestApplicationResponse:
         ar = ApplicationResponse.load_from_json(data)
         assert isinstance(ar, ApplicationResponse)
         assert ar.uri == 'http://zotskapp.be'
-        assert ar.url == 'http://zotskapp.be/'
+        assert ar.service_url == 'http://zotskapp.be/references'
         assert ar.success
         assert ar.has_references
         assert ar.count == 1
@@ -111,7 +111,7 @@ class TestApplicationResponse:
         data = {
             'title': 'Zotskapp',
             'uri': 'http://zotskapp.be',
-            'url': 'http://zotskapp.be/',
+            'service_url': 'http://zotskapp.be/references',
             'success': True,
             'has_references': True,
             'count': 1,
@@ -124,7 +124,7 @@ class TestApplicationResponse:
         ar = ApplicationResponse.load_from_json(data)
         assert isinstance(ar, ApplicationResponse)
         assert ar.uri == 'http://zotskapp.be'
-        assert ar.url == 'http://zotskapp.be/'
+        assert ar.service_url == 'http://zotskapp.be/references'
         assert ar.success
         assert ar.has_references
         assert ar.count == 1

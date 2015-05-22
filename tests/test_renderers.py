@@ -42,7 +42,7 @@ class TestRenderers:
         ar = ApplicationResponse(
             'My app',
             'http://something.example.org',
-            'http://somethingelse.example.org',
+            'http://somethingelse.example.org/references',
             True,
             False,
             0,
@@ -51,7 +51,7 @@ class TestRenderers:
         from pyramid_urireferencer.renderers import application_adapter
         r = application_adapter(ar, {})
         assert r['uri'] == 'http://something.example.org'
-        assert r['url'] == 'http://somethingelse.example.org'
+        assert r['service_url'] == 'http://somethingelse.example.org/references'
         assert r['success']
         assert not r['has_references']
         assert r['count'] == 0
@@ -61,7 +61,7 @@ class TestRenderers:
         ar = ApplicationResponse(
             'My app',
             'http://something.example.org',
-            'http://somethingelse.example.org',
+            'http://somethingelse.example.org/references',
             True,
             False,
             0,
@@ -70,7 +70,7 @@ class TestRenderers:
         from pyramid_urireferencer.renderers import application_adapter
         r = application_adapter(ar, {})
         assert r['uri'] == 'http://something.example.org'
-        assert r['url'] == 'http://somethingelse.example.org'
+        assert r['service_url'] == 'http://somethingelse.example.org/references'
         assert r['success']
         assert not r['has_references']
         assert r['count'] == 0

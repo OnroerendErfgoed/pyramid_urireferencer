@@ -26,7 +26,7 @@ def registry_adapter(obj, request):
         'applications': [{
             'title': a.title,
             'uri': a.uri,
-            'url': a.url,
+            'service_url': a.service_url,
             'success': a.success,
             'has_references': a.has_references,
             'count': a.count,
@@ -47,7 +47,7 @@ def application_adapter(obj, request):
     return {
         'title': obj.title,
         'uri': obj.uri,
-        'url': obj.url,
+        'service_url': obj.service_url,
         'success': obj.success,
         'has_references': obj.has_references,
         'count': obj.count,

@@ -7,6 +7,12 @@ class RegistryResponse:
     '''
     Represents what the registry will send back to a client when asked if
     a certain uri is used somewhere.
+
+    :param string query_uri: Uri of the resource unser survey.
+    :param boolean success: Were all the queries successful?
+    :param boolean has_references: Were any references found?
+    :param int count: How many references were found?
+    :param list applications: A list of application results.
     '''
     def __init__(self, query_uri, success, has_references, count, applications):
             self.query_uri = query_uri
@@ -19,7 +25,7 @@ class RegistryResponse:
     def load_from_json(data):
         '''
         Load a :class:`RegistryReponse` from a dictionary or a string (that
-        will be parsed as josn).
+        will be parsed as json).
         '''
         r = RegistryResponse(None, None, None, None, None)
         if isinstance(data, str):
@@ -36,11 +42,20 @@ class ApplicationResponse:
     '''
     Represents what a certain application will send back to the registry when
     asked if a certain uri is used by the application.
+
+    :param string title: Title of the application
+    :param string uri: A uri for the application, not guaranteed to be a http url.
+    :param string service_url: The url that answered the question
+    :param boolean success: Was the querie successful?
+    :param boolean has_references: Were any references found?
+    :param int count: How many references were found?
+    :param list applications: A list of items that have a reference to the \
+        uri under survey. Limited to 5 items for performance reasons.
     '''
-    def __init__(self, title, uri, url, success, has_references, count, items):
+    def __init__(self, title, uri, service_url, success, has_references, count, items):
             self.title = title
             self.uri = uri
-            self.url = url
+            self.service_url = service_url
             self.success = success
             self.has_references = has_references
             self.count = count
@@ -48,12 +63,16 @@ class ApplicationResponse:
 
     @staticmethod
     def load_from_json(data):
+        '''
+        Load a :class:`ApplicationResponse` from a dictionary or string (that
+        will be parsed as json).
+        '''
         r = ApplicationResponse(None, None, None, None, None, None, None)
         if isinstance(data, str):
             data = json.loads(data)
         r.name = data['title']
         r.uri = data['uri']
-        r.url = data['url']
+        r.service_url = data['service_url']
         r.success = data['success']
         r.has_references = data['has_references']
         r.count = data['count']
@@ -71,6 +90,10 @@ class Item:
 
     @staticmethod
     def load_from_json(data):
+        '''
+        Load a :class:`Item` from a dictionary ot string (that will be parsed
+        as json)
+        '''
         i = Item(None, None)
         if isinstance(data, str):
             data = json.loads(data)
