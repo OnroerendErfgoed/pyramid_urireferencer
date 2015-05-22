@@ -8,6 +8,12 @@ from pyramid_urireferencer import IReferencer, Referencer, _add_referencer, get_
 from pyramid_urireferencer.views import ReferencesPluginView
 from pyramid_urireferencer.models import RegistryResponse
 
+try:
+    from urllib import urlencode
+except ImportError:
+    from urllib.parse import urlencode
+
+
 class ViewTests(unittest.TestCase):
     def setUp(self):
         self.config = testing.setUp()
@@ -44,9 +50,12 @@ class ViewTests(unittest.TestCase):
         self.assertEqual(response.success, False)
 
         httpretty.enable()  # enable HTTPretty so that it will monkey patch the socket module
-        httpretty.register_uri(httpretty.GET, url + '/references?uri=' + uri,
-                       body=json.dumps(reg_response_success_ref1),
-                       content_type="application/json")
+        httpretty.register_uri(
+            httpretty.GET,
+            '{0}/references?{1}'.format(url, urlencode({'uri': uri})),
+            body=json.dumps(reg_response_success_ref1),
+            content_type="application/json"
+        )
 
         response = referencer.is_referenced(uri)
         self.assertIsInstance(response, RegistryResponse)

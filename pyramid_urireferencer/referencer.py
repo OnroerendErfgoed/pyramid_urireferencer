@@ -3,6 +3,11 @@
 import abc
 import requests
 
+try:
+    from urllib import urlencode
+except ImportError:
+    from urllib.parse import urlencode
+
 import logging
 log = logging.getLogger(__name__)
 
@@ -64,7 +69,7 @@ class Referencer(AbstractReferencer):
         :rtype: :class:`pyramid_urireferencer.models.RegistryResponse`
         """
         try:
-            url = self.registry_url + '/references?uri=' + uri
+            url = '{0}/references?{1}'.format(self.registry_url, urlencode({'uri': uri}))
             r = requests.get(url)
             return RegistryResponse.load_from_json(r.json())
         except Exception as e:
