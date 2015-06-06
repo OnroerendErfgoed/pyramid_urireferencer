@@ -1,4 +1,4 @@
-0.2.0 (2015-05-22)
+0.2.0 (2015-06-07)
 ------------------
 
 - Changed ApplicationResponse.url to service_url.
