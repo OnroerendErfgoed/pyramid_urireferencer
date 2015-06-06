@@ -14,18 +14,23 @@ with open(os.path.join(here, 'CHANGES.rst')) as f:
     CHANGES = f.read()
 
 setup(name='pyramid_urireferencer',
-      version='0.1.0',
+      version='0.2.0',
       description='A pyramid plugin to handle referencing external URIs.',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
-        "Programming Language :: Python",
+        "License :: OSI Approved :: MIT License",
+        "Intended Audience :: Developers",
         "Framework :: Pyramid",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.3",
+        "Programming Language :: Python :: 3.4"
         ],
       author='Flanders Heritage Agency',
       author_email='ict@onroerenderfgoed.be',
-      url='http://pyramid_urireferencer.readthedocs.org',
+      url='https://github.com/OnroerendErfgoed/pyramid_urireferencer',
       keywords='web wsgi pyramid uri REST references',
       packages=find_packages(),
       include_package_data=True,
