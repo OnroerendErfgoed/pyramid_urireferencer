@@ -4,6 +4,7 @@
 - Changed ApplicationResponse.url to service_url.
 - Cleaned up some documentation.
 - Added an AbstractReferencer that has no implementation whatsoever.
+- Added Python Wheel support
 - Make sure that the uri parameter is properly urlencoded.
 
 
