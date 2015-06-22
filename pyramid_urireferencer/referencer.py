@@ -21,7 +21,7 @@ class AbstractReferencer:
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
-    def references(self, uri):
+    def references(self, uri, **kwargs):
         """
         This method checks if a certain uri is being referenced by any other
         resource within this application.

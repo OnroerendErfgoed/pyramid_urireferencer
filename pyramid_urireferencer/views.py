@@ -15,10 +15,10 @@ class RestView(ApplicatieView):
     pass
 
 class ReferencesPluginView(RestView):
-    @view_config(route_name='references', renderer='json', accept='application/json')
+    @view_config(route_name='references', renderer='json_item', accept='application/json')
     def get_references(self):
         try:
-            return get_referencer(self.request.registry).references('uri')
-        except:
-            raise NotImplementedError("Referencerprobleem")
+            return get_referencer(self.request.registry).references(self.request.params.get('uri'), self.request)
+        except Exception as e:
+            raise NotImplementedError("Referencerprobleem", e.args)
 
