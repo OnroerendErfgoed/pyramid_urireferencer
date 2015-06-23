@@ -64,9 +64,6 @@ class ViewTests(unittest.TestCase):
         httpretty.disable()  # disable afterwards, so that you will have no problems in code that uses that socket module
         httpretty.reset()
 
-    def test_get_references(self):
-        self.assertRaises(NotImplementedError, ReferencesPluginView(testing.DummyRequest()).get_references)
-
 
 class TestReferencer(Referencer):
     def references(self, uri):
