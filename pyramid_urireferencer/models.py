@@ -70,7 +70,7 @@ class ApplicationResponse:
         r = ApplicationResponse(None, None, None, None, None, None, None)
         if isinstance(data, str):
             data = json.loads(data)
-        r.name = data['title']
+        r.title = data['title']
         r.uri = data['uri']
         r.service_url = data['service_url']
         r.success = data['success']
