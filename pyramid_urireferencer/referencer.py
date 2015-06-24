@@ -27,7 +27,7 @@ class AbstractReferencer:
         resource within this application.
 
         :param string uri: URI of the resource we need to check for
-        :param request: `pyramid.request` with useful configuration information and connections
+        :param request: :class:`pyramid.request.Request` with useful configuration information and connections
                         of the application (registry, route_url, session) to determine the references
         :rtype: :class:`pyramid_urireferencer.models.ApplicationResponse`
         """
