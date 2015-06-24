@@ -6,6 +6,7 @@ from pyramid.path import (
 )
 from zope.interface import Interface
 from .referencer import Referencer
+from .renderers import json_renderer
 
 class IReferencer(Interface):
     pass
@@ -16,6 +17,7 @@ def includeme(config):
     # config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('references', '/references')
     _add_referencer(config.registry)
+    config.add_renderer('json_item', json_renderer)
     # config.add_directive('referencer', referencer)
     config.scan()
 
