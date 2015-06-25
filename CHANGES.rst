@@ -1,3 +1,11 @@
+0.3.0 (2015-06-25)
+------------------
+
+- Added uri and request to references parameters
+- Included renderer in request config
+- Removed exception in get_references view
+- Fixed ApplicationResponse title from json
+
 0.2.0 (2015-06-07)
 ------------------
 
