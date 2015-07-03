@@ -3,7 +3,7 @@ from pyramid.httpexceptions import (
     HTTPInternalServerError,
     HTTPConflict)
 
-from pyramid_urireferencer import get_referencer
+import pyramid_urireferencer
 
 '''
 Thid module is used when blocking operations on a certain uri
@@ -20,7 +20,7 @@ def protected_operation(fn):
 
     def advice(parent_object, *args, **kw):
         id = parent_object.request.matchdict['id']
-        referencer = get_referencer(parent_object.request.registry)
+        referencer = pyramid_urireferencer.get_referencer(parent_object.request.registry)
         uri = parent_object.uri_template.format(id)
         registery_response = referencer.is_referenced(uri)
         if not registery_response.success:

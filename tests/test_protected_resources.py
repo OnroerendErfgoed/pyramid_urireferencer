@@ -6,9 +6,9 @@ from pyramid_urireferencer.models import RegistryResponse
 from pyramid_urireferencer.referencer import Referencer
 from pyramid.httpexceptions import HTTPConflict, HTTPInternalServerError
 try:
-    from unittest.mock import Mock
+    from unittest.mock import Mock, patch
 except ImportError:
-    from mock import Mock  # pragma: no cover
+    from mock import Mock, patch  # pragma: no cover
 
 def get_app(nr):
     class Object(object):
@@ -41,29 +41,26 @@ class ProtectedTests(unittest.TestCase):
     def setUp(self):
         pass
 
-    def test_protected_operation(self):
+    @patch('pyramid_urireferencer.protected_resources.pyramid_urireferencer.Referencer.is_referenced')
+    def test_protected_operation(self, is_referenced_mock):
         dummy = DummyParent()
-        is_referenced_mock = Mock(
-            return_value=RegistryResponse('https://id.erfgoed.net/resources/1', True, False, 0, []))
-        Referencer.is_referenced = is_referenced_mock
+        is_referenced_mock.return_value = RegistryResponse('https://id.erfgoed.net/resources/1', True, False, 0, [])
         dummy.protected_dummy()
         is_referenced_call = is_referenced_mock.mock_calls[0]
         self.assertEqual('https://id.erfgoed.net/resources/1', is_referenced_call[1][0])
 
-    def test_protected_operation_409(self):
+    @patch('pyramid_urireferencer.protected_resources.pyramid_urireferencer.Referencer.is_referenced')
+    def test_protected_operation_409(self, is_referenced_mock):
         dummy = DummyParent()
-        is_referenced_mock = Mock(
-            return_value=RegistryResponse('https://id.erfgoed.net/resources/1', True, True, 10, [get_app(1), get_app(2)]))
-        Referencer.is_referenced = is_referenced_mock
+        is_referenced_mock.return_value = RegistryResponse('https://id.erfgoed.net/resources/1', True, True, 10, [get_app(1), get_app(2)])
         self.assertRaises(HTTPConflict, dummy.protected_dummy)
         is_referenced_call = is_referenced_mock.mock_calls[0]
         self.assertEqual('https://id.erfgoed.net/resources/1', is_referenced_call[1][0])
 
-    def test_protected_operation_500(self):
+    @patch('pyramid_urireferencer.protected_resources.pyramid_urireferencer.Referencer.is_referenced')
+    def test_protected_operation_500(self, is_referenced_mock):
         dummy = DummyParent()
-        is_referenced_mock = Mock(
-            return_value=RegistryResponse('https://id.erfgoed.net/resources/1', False, None, None, None))
-        Referencer.is_referenced = is_referenced_mock
+        is_referenced_mock.return_value = RegistryResponse('https://id.erfgoed.net/resources/1', False, None, None, None)
         self.assertRaises(HTTPInternalServerError, dummy.protected_dummy)
         is_referenced_call = is_referenced_mock.mock_calls[0]
         self.assertEqual('https://id.erfgoed.net/resources/1', is_referenced_call[1][0])
