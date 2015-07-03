@@ -8,7 +8,6 @@ from pyramid_urireferencer import get_referencer
 '''
 Thid module is used when blocking operations on a certain uri
 that might be used in external applications.
-:versionadded: 0.4.0
 '''
 
 
