@@ -6,9 +6,9 @@ from pyramid_urireferencer.models import RegistryResponse
 from pyramid_urireferencer.referencer import Referencer
 from pyramid.httpexceptions import HTTPConflict, HTTPInternalServerError
 try:
-    from unittest.mock import Mock, MagicMock, call, patch
+    from unittest.mock import Mock
 except ImportError:
-    from mock import Mock, MagicMock, call, patch  # pragma: no cover
+    from mock import Mock  # pragma: no cover
 
 def get_app(nr):
     class Object(object):
