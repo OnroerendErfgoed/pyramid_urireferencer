@@ -22,13 +22,15 @@ def protected_operation(fn):
     def advice(parent_object, *args, **kw):
         id = parent_object.request.matchdict['id']
         referencer = get_referencer(parent_object.request.registry)
-        registery_response = referencer.is_referenced(parent_object.uri_template.format(id))
+        uri = parent_object.uri_template.format(id)
+        registery_response = referencer.is_referenced(uri)
         if not registery_response.success:
-            raise HTTPInternalServerError(detail="Urireferencer: Er gaat iets mis bij het ophalen van de referenties")
+            raise HTTPInternalServerError(
+                detail="Urireferencer: Something goes wrong while retrieving references of the uri {0}".format(uri))
         if registery_response.has_references:
             raise HTTPConflict(
-                detail="Urireferencer: Er wordt gerefereerd naar het advies in de applicatie(s) {0}".
-                    format(', '.join([app.title for app in registery_response.applications])))
+                detail="Urireferencer: The uri {0} is still in use by other applications: {1}".
+                    format(uri, ', '.join([app.title for app in registery_response.applications])))
         return fn(parent_object, *args, **kw)
 
     return advice
