@@ -13,12 +13,9 @@ class IReferencer(Interface):
 
 def includeme(config):
     """this function adds some configuration for the application"""
-    # config.include('pyramid_tm')
-    # config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('references', '/references')
     _add_referencer(config.registry)
     config.add_renderer('json_item', json_renderer)
-    # config.add_directive('referencer', referencer)
     config.scan()
 
 def _add_referencer(registry):
@@ -38,7 +35,7 @@ def get_referencer(registry):
     """
     Get the referencer class
 
-    :rtype: pyramid_urireferencer.referencer.Referencer
+    :rtype: pyramid_urireferencer.referencer.AbstractReferencer
     """
     #Argument might be a config or request
     regis = getattr(registry, 'registry', None)
