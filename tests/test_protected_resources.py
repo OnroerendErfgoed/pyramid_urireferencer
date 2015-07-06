@@ -3,7 +3,6 @@ import unittest
 from pyramid import testing
 from pyramid_urireferencer.protected_resources import protected_operation
 from pyramid_urireferencer.models import RegistryResponse
-from pyramid_urireferencer.referencer import Referencer
 from pyramid.httpexceptions import HTTPConflict, HTTPInternalServerError
 try:
     from unittest.mock import Mock, patch
@@ -15,6 +14,7 @@ def get_app(nr):
         pass
     a = Object()
     a.title = 'App {0}'.format(nr)
+    a.has_references = True if nr == 1 else False
     return a
 
 class DummyParent(object):
@@ -53,6 +53,14 @@ class ProtectedTests(unittest.TestCase):
     def test_protected_operation_409(self, is_referenced_mock):
         dummy = DummyParent()
         is_referenced_mock.return_value = RegistryResponse('https://id.erfgoed.net/resources/1', True, True, 10, [get_app(1), get_app(2)])
+        self.assertRaises(HTTPConflict, dummy.protected_dummy)
+        is_referenced_call = is_referenced_mock.mock_calls[0]
+        self.assertEqual('https://id.erfgoed.net/resources/1', is_referenced_call[1][0])
+
+    @patch('pyramid_urireferencer.protected_resources.pyramid_urireferencer.Referencer.is_referenced')
+    def test_protected_operation_409_2(self, is_referenced_mock):
+        dummy = DummyParent()
+        is_referenced_mock.return_value = RegistryResponse('https://id.erfgoed.net/resources/1', False, True, 10, [get_app(1), get_app(2)])
         self.assertRaises(HTTPConflict, dummy.protected_dummy)
         is_referenced_call = is_referenced_mock.mock_calls[0]
         self.assertEqual('https://id.erfgoed.net/resources/1', is_referenced_call[1][0])

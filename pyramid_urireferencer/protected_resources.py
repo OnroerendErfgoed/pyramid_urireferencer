@@ -23,13 +23,14 @@ def protected_operation(fn):
         referencer = pyramid_urireferencer.get_referencer(parent_object.request.registry)
         uri = parent_object.uri_template.format(id)
         registery_response = referencer.is_referenced(uri)
-        if not registery_response.success:
-            raise HTTPInternalServerError(
-                detail="Urireferencer: Something goes wrong while retrieving references of the uri {0}".format(uri))
         if registery_response.has_references:
             raise HTTPConflict(
                 detail="Urireferencer: The uri {0} is still in use by other applications: {1}".
-                    format(uri, ', '.join([app.title for app in registery_response.applications])))
+                    format(uri, ', '.join([app_response.title for app_response in registery_response.applications
+                                           if app_response.has_references])))
+        elif not registery_response.success:
+            raise HTTPInternalServerError(
+                detail="Urireferencer: Something goes wrong while retrieving references of the uri {0}".format(uri))
         return fn(parent_object, *args, **kw)
 
     return advice
