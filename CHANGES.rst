@@ -1,3 +1,8 @@
+0.4.0 (2015-07-10)
+------------------
+
+- Added module `protected_resources` containing a `protected_operation` decorator function.
+
 0.3.0 (2015-06-25)
 ------------------
 
