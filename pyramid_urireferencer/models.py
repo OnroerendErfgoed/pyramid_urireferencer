@@ -49,7 +49,7 @@ class ApplicationResponse:
     :param boolean success: Was the querie successful?
     :param boolean has_references: Were any references found?
     :param int count: How many references were found?
-    :param list applications: A list of items that have a reference to the \
+    :param list items: A list of items that have a reference to the \
         uri under survey. Limited to 5 items for performance reasons.
     '''
     def __init__(self, title, uri, service_url, success, has_references, count, items):
@@ -83,6 +83,9 @@ class ApplicationResponse:
 class Item:
     '''
     A single item that holds a reference to the queried uri.
+
+    :param string title: Title of the item.
+    :param string uri: Uri of the item.
     '''
     def __init__(self, title, uri):
         self.title = title

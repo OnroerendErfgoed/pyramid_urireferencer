@@ -2,6 +2,7 @@
 ------------------
 
 - Add support for python 3.5
+- Some minor doc fixes
 
 0.4.0 (2015-07-10)
 ------------------
