@@ -26,6 +26,7 @@ def protected_operation(fn):
     :raises pyramid.httpexceptions.HTTPInternalServerError: Raised when we were
         unable to check that the URI is no longer being used.
     '''
+
     def advice(parent_object, *args, **kw):
         id = parent_object.request.matchdict['id']
         referencer = pyramid_urireferencer.get_referencer(parent_object.request.registry)
@@ -33,12 +34,13 @@ def protected_operation(fn):
         registery_response = referencer.is_referenced(uri)
         if registery_response.has_references:
             raise HTTPConflict(
-                detail="Urireferencer: The uri {0} is still in use by other applications: {1}".
-                    format(uri, ', '.join([app_response.title for app_response in registery_response.applications
-                                           if app_response.has_references])))
+                    detail="Urireferencer: The uri {0} is still in use by other applications. A total of {1} references have been found in the following applications: {2}".
+                        format(uri, registery_response.count,
+                               ', '.join([app_response.title for app_response in registery_response.applications
+                                          if app_response.has_references])))
         elif not registery_response.success:
             raise HTTPInternalServerError(
-                detail="Urireferencer: Something went wrong while retrieving references of the uri {0}".format(uri))
+                    detail="Urireferencer: Something went wrong while retrieving references of the uri {0}".format(uri))
         return fn(parent_object, *args, **kw)
 
     return advice

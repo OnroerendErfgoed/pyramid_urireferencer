@@ -61,7 +61,11 @@ class ProtectedTests(unittest.TestCase):
     def test_protected_operation_409_2(self, is_referenced_mock):
         dummy = DummyParent()
         is_referenced_mock.return_value = RegistryResponse('https://id.erfgoed.net/resources/1', False, True, 10, [get_app(1), get_app(2)])
-        self.assertRaises(HTTPConflict, dummy.protected_dummy)
+        with self.assertRaises(HTTPConflict) as http_conflict:
+            dummy.protected_dummy()
+        print(http_conflict)
+        print(http_conflict.exception)
+
         is_referenced_call = is_referenced_mock.mock_calls[0]
         self.assertEqual('https://id.erfgoed.net/resources/1', is_referenced_call[1][0])
 
