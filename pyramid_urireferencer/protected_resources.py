@@ -8,6 +8,7 @@ that might be used in external applications.
 from pyramid.httpexceptions import (
     HTTPInternalServerError,
     HTTPConflict)
+from webob import Response
 
 import pyramid_urireferencer
 
@@ -33,11 +34,31 @@ def protected_operation(fn):
         uri = parent_object.uri_template.format(id)
         registery_response = referencer.is_referenced(uri)
         if registery_response.has_references:
-            raise HTTPConflict(
-                    detail="Urireferencer: The uri {0} is still in use by other applications. A total of {1} references have been found in the following applications: {2}".
-                        format(uri, registery_response.count,
-                               ', '.join([app_response.title for app_response in registery_response.applications
-                                          if app_response.has_references])))
+            if parent_object.request.headers.get("Accept", None) == "application/json":
+                response = Response()
+                response.status_code = 409
+                response_json = {
+                    "message": "The uri {0} is still in use by other applications. A total of {1} references have been found.".format(
+                        uri, registery_response.count),
+                    "errors": [],
+                    "registry_response": registery_response.to_json()
+                }
+                for app_response in registery_response.applications:
+                    if app_response.has_references:
+                        error_string = "{0}: {1} references found, such as {2}"\
+                            .format(app_response.uri,
+                                    app_response.count,
+                                    ', '.join([i.uri for i in app_response.items]))
+                        response_json["errors"].append(error_string)
+                        response.json_body = response_json
+                        response.content_type = 'application/json'
+                return response
+            else:
+                raise HTTPConflict(
+                        detail="Urireferencer: The uri {0} is still in use by other applications. A total of {1} references have been found in the following applications: {2}".
+                            format(uri, registery_response.count,
+                                   ', '.join([app_response.title for app_response in registery_response.applications
+                                              if app_response.has_references])))
         elif not registery_response.success:
             raise HTTPInternalServerError(
                     detail="Urireferencer: Something went wrong while retrieving references of the uri {0}".format(uri))

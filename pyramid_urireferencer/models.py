@@ -14,12 +14,13 @@ class RegistryResponse:
     :param int count: How many references were found?
     :param list applications: A list of application results.
     '''
+
     def __init__(self, query_uri, success, has_references, count, applications):
-            self.query_uri = query_uri
-            self.success = success
-            self.has_references = has_references
-            self.count = count
-            self.applications = applications
+        self.query_uri = query_uri
+        self.success = success
+        self.has_references = has_references
+        self.count = count
+        self.applications = applications
 
     @staticmethod
     def load_from_json(data):
@@ -34,8 +35,18 @@ class RegistryResponse:
         r.success = data['success']
         r.has_references = data['has_references']
         r.count = data['count']
-        r.applications = [ApplicationResponse.load_from_json(a) for a in data['applications']] if data['applications'] is not None else None
+        r.applications = [ApplicationResponse.load_from_json(a) for a in data['applications']] if data[
+                                                                                                      'applications'] is not None else None
         return r
+
+    def to_json(self):
+        return {
+            "query_uri": self.query_uri,
+            "success": self.success,
+            "has_references": self.has_references,
+            "count": self.count,
+            "applications": [app.to_json() for app in self.applications]
+        }
 
 
 class ApplicationResponse:
@@ -52,14 +63,15 @@ class ApplicationResponse:
     :param list items: A list of items that have a reference to the \
         uri under survey. Limited to 5 items for performance reasons.
     '''
+
     def __init__(self, title, uri, service_url, success, has_references, count, items):
-            self.title = title
-            self.uri = uri
-            self.service_url = service_url
-            self.success = success
-            self.has_references = has_references
-            self.count = count
-            self.items = items
+        self.title = title
+        self.uri = uri
+        self.service_url = service_url
+        self.success = success
+        self.has_references = has_references
+        self.count = count
+        self.items = items
 
     @staticmethod
     def load_from_json(data):
@@ -79,6 +91,17 @@ class ApplicationResponse:
         r.items = [Item.load_from_json(a) for a in data['items']] if data['items'] is not None else None
         return r
 
+    def to_json(self):
+        return {
+            "title": self.title,
+            "uri": self.uri,
+            "service_url": self.service_url,
+            "success": self.success,
+            "has_references": self.has_references,
+            "count": self.count,
+            "items": [item.to_json() for item in self.items]
+        }
+
 
 class Item:
     '''
@@ -87,6 +110,7 @@ class Item:
     :param string title: Title of the item.
     :param string uri: Uri of the item.
     '''
+
     def __init__(self, title, uri):
         self.title = title
         self.uri = uri
@@ -103,3 +127,9 @@ class Item:
         i.uri = data['uri']
         i.title = data['title']
         return i
+
+    def to_json(self):
+        return {
+            "title": self.title,
+            "uri": self.uri
+        }
