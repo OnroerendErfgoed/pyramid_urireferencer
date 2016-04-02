@@ -28,16 +28,15 @@ class RegistryResponse:
         Load a :class:`RegistryReponse` from a dictionary or a string (that
         will be parsed as json).
         '''
-        r = RegistryResponse(None, None, None, None, None)
         if isinstance(data, str):
             data = json.loads(data)
-        r.query_uri = data['query_uri']
-        r.success = data['success']
-        r.has_references = data['has_references']
-        r.count = data['count']
-        r.applications = [ApplicationResponse.load_from_json(a) for a in data['applications']] if data[
-                                                                                                      'applications'] is not None else None
-        return r
+        applications = [
+            ApplicationResponse.load_from_json(a) for a in data['applications']
+        ] if data['applications'] is not None else []
+        return RegistryResponse(
+            data['query_uri'], data['success'],
+            data['has_references'], data['count'], applications
+        )
 
     def to_json(self):
         return {
@@ -79,17 +78,13 @@ class ApplicationResponse:
         Load a :class:`ApplicationResponse` from a dictionary or string (that
         will be parsed as json).
         '''
-        r = ApplicationResponse(None, None, None, None, None, None, None)
         if isinstance(data, str):
             data = json.loads(data)
-        r.title = data['title']
-        r.uri = data['uri']
-        r.service_url = data['service_url']
-        r.success = data['success']
-        r.has_references = data['has_references']
-        r.count = data['count']
-        r.items = [Item.load_from_json(a) for a in data['items']] if data['items'] is not None else None
-        return r
+        items = [Item.load_from_json(a) for a in data['items']] if data['items'] is not None else []
+        return ApplicationResponse(
+            data['title'], data['uri'], data['service_url'],
+            data['success'], data['has_references'], data['count'], items
+        )
 
     def to_json(self):
         return {
@@ -121,12 +116,9 @@ class Item:
         Load a :class:`Item` from a dictionary ot string (that will be parsed
         as json)
         '''
-        i = Item(None, None)
         if isinstance(data, str):
             data = json.loads(data)
-        i.uri = data['uri']
-        i.title = data['title']
-        return i
+        return Item(data['title'], data['uri'])
 
     def to_json(self):
         return {

@@ -3,6 +3,8 @@
 
 - Add support for python 3.5
 - Some minor doc fixes
+- Changed an edge case where `items` or `applications` response attributes could
+  be `None` so that they are now always empty lists. (#6)
 
 0.4.0 (2015-07-10)
 ------------------
