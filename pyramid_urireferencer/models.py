@@ -94,7 +94,7 @@ class ApplicationResponse:
             "success": self.success,
             "has_references": self.has_references,
             "count": self.count,
-            "items": [item.to_json() for item in self.items]
+            "items": [item.to_json() for item in self.items] if self.items else []
         }
 
 

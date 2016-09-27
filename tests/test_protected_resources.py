@@ -29,6 +29,18 @@ def get_app(nr):
     return a
 
 
+def get_app_500():
+    return ApplicationResponse(
+        title='App',
+        uri="https://dev-app.onroerenderfgoed.be/",
+        service_url="https://dev-app.onroerenderfgoed.be/references",
+        success=False,
+        has_references=None,
+        count=None,
+        items=None
+    )
+
+
 class DummyParent(object):
     def __init__(self):
         self.request = testing.DummyRequest()
@@ -96,7 +108,25 @@ class ProtectedTests(unittest.TestCase):
     def test_protected_operation_500(self, is_referenced_mock):
         dummy = DummyParent()
         is_referenced_mock.return_value = RegistryResponse('https://id.erfgoed.net/resources/1', False, None, None,
-                                                           None)
+                                                           [get_app_500()])
         self.assertRaises(HTTPInternalServerError, dummy.protected_dummy)
         is_referenced_call = is_referenced_mock.mock_calls[0]
         self.assertEqual('https://id.erfgoed.net/resources/1', is_referenced_call[1][0])
+
+    @patch('pyramid_urireferencer.protected_resources.pyramid_urireferencer.Referencer.is_referenced')
+    def test_protected_operation_500_json(self, is_referenced_mock):
+        dummy = DummyParent()
+        dummy.request.headers = {"Accept": "application/json"}
+        is_referenced_mock.return_value = RegistryResponse('https://id.erfgoed.net/resources/1', False, None, None,
+                                                           [get_app_500()])
+        res = dummy.protected_dummy()
+        self.assertEqual(500, res.status_code)
+        self.assertEqual(res.json_body["message"],
+                         "Unable to verify if the uri https://id.erfgoed.net/resources/1 is no longer being used.")
+        self.assertListEqual(res.json_body["errors"],
+                             ["https://dev-app.onroerenderfgoed.be/: Could not verify if the uri is no longer being used."])
+        self.assertEqual("application/json", res.content_type)
+
+        is_referenced_call = is_referenced_mock.mock_calls[0]
+        self.assertEqual('https://id.erfgoed.net/resources/1', is_referenced_call[1][0])
+
