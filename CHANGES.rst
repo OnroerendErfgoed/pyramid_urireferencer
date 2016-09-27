@@ -5,6 +5,7 @@
 - Some minor doc fixes
 - Changed an edge case where `items` or `applications` response attributes could
   be `None` so that they are now always empty lists. (#6)
+- Updated error message and added JSON error message when a backend application can't be reached (#9) and when a resource can't be deleted (#10)
 
 0.4.0 (2015-07-10)
 ------------------
