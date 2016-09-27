@@ -122,9 +122,9 @@ class ProtectedTests(unittest.TestCase):
         res = dummy.protected_dummy()
         self.assertEqual(500, res.status_code)
         self.assertEqual(res.json_body["message"],
-                         "Unable to verify if the uri https://id.erfgoed.net/resources/1 is no longer being used.")
+                         "Unable to verify the uri https://id.erfgoed.net/resources/1 is no longer being used.")
         self.assertListEqual(res.json_body["errors"],
-                             ["https://dev-app.onroerenderfgoed.be/: Could not verify if the uri is no longer being used."])
+                             ["https://dev-app.onroerenderfgoed.be/: Could not verify the uri is no longer being used."])
         self.assertEqual("application/json", res.content_type)
 
         is_referenced_call = is_referenced_mock.mock_calls[0]
