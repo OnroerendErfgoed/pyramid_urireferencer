@@ -50,8 +50,8 @@ def protected_operation(fn):
                                     app_response.count,
                                     ', '.join([i.uri for i in app_response.items]))
                         response_json["errors"].append(error_string)
-                        response.json_body = response_json
-                        response.content_type = 'application/json'
+                    response.json_body = response_json
+                    response.content_type = 'application/json'
                 return response
             else:
                 raise HTTPConflict(
@@ -60,8 +60,26 @@ def protected_operation(fn):
                                    ', '.join([app_response.title for app_response in registery_response.applications
                                               if app_response.has_references])))
         elif not registery_response.success:
-            raise HTTPInternalServerError(
-                    detail="Urireferencer: Something went wrong while retrieving references of the uri {0}".format(uri))
+            if parent_object.request.headers.get("Accept", None) == "application/json":
+                response = Response()
+                response.status_code = 500
+                response_json = {
+                    "message": "Unable to verify the uri {0} is no longer being used.".format(uri),
+                    "errors": [],
+                    "registry_response": registery_response.to_json()
+                }
+                for app_response in registery_response.applications:
+                    if not app_response.success:
+                        response_json["errors"].append(
+                            "{}: Could not verify the uri is no longer being used.".format(app_response.uri))
+                response.json_body = response_json
+                response.content_type = 'application/json'
+                return response
+            else:
+                raise HTTPInternalServerError(
+                        detail="Urireferencer: Unable to verify the uri {0} is no longer being used. Could not verify with {1}".
+                            format(uri, ', '.join([app_response.uri for app_response
+                                                   in registery_response.applications if not app_response.success])))
         return fn(parent_object, *args, **kw)
 
     return advice
