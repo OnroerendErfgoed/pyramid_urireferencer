@@ -52,10 +52,10 @@ class Referencer(AbstractReferencer):
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, registry_url, **kwargs):
-        '''
+        """
         :param string registry_url: Locatie where the central registry can be
             found
-        '''
+        """
         self.registry_url = registry_url
 
     def is_referenced(self, uri):
