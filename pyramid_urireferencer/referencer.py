@@ -4,9 +4,10 @@ import abc
 import requests
 
 import logging
-log = logging.getLogger(__name__)
-
 from .models import RegistryResponse
+
+log = logging.getLogger()
+
 
 class AbstractReferencer:
     """
