@@ -6,7 +6,7 @@ import requests
 import logging
 from .models import RegistryResponse
 
-log = logging.getLogger()
+log = logging.getLogger(__name__)
 
 
 class AbstractReferencer:

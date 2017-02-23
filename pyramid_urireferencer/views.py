@@ -5,7 +5,7 @@ from pyramid_urireferencer import get_referencer
 
 import logging
 
-log = logging.getLogger()
+log = logging.getLogger(__name__)
 
 
 class ApplicatieView(object):

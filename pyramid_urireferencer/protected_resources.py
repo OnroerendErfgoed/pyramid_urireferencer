@@ -13,7 +13,7 @@ from webob import Response
 
 import pyramid_urireferencer
 
-log = logging.getLogger()
+log = logging.getLogger(__name__)
 
 
 def protected_operation(fn):
