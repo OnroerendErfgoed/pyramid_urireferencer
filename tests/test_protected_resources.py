@@ -51,8 +51,7 @@ class DummyParent(object):
         }
         config.include('pyramid_urireferencer')
 
-        self.request.matchdict = {'id': 1}
-        self.uri_template = 'https://id.erfgoed.net/resources/{0}'
+        self.get_uri = lambda: 'https://id.erfgoed.net/resources/1'
 
     @protected_operation
     def protected_dummy(self):
