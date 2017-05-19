@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 import unittest
 from pyramid import testing
 from pyramid_urireferencer.protected_resources import protected_operation
@@ -60,7 +61,7 @@ class DummyParent(object):
 
 class ProtectedTests(unittest.TestCase):
     def setUp(self):
-        pass
+        logging.basicConfig(level=logging.WARN)
 
     @patch('pyramid_urireferencer.protected_resources.pyramid_urireferencer.Referencer.is_referenced')
     def test_protected_operation(self, is_referenced_mock):

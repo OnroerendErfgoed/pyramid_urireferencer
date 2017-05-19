@@ -4,7 +4,7 @@ import json
 
 
 class RegistryResponse:
-    '''
+    """
     Represents what the registry will send back to a client when asked if
     a certain uri is used somewhere.
 
@@ -13,7 +13,7 @@ class RegistryResponse:
     :param boolean has_references: Were any references found?
     :param int count: How many references were found?
     :param list applications: A list of application results.
-    '''
+    """
 
     def __init__(self, query_uri, success, has_references, count, applications):
         self.query_uri = query_uri
@@ -24,10 +24,10 @@ class RegistryResponse:
 
     @staticmethod
     def load_from_json(data):
-        '''
+        """
         Load a :class:`RegistryReponse` from a dictionary or a string (that
         will be parsed as json).
-        '''
+        """
         if isinstance(data, str):
             data = json.loads(data)
         applications = [
@@ -49,7 +49,7 @@ class RegistryResponse:
 
 
 class ApplicationResponse:
-    '''
+    """
     Represents what a certain application will send back to the registry when
     asked if a certain uri is used by the application.
 
@@ -61,7 +61,7 @@ class ApplicationResponse:
     :param int count: How many references were found?
     :param list items: A list of items that have a reference to the \
         uri under survey. Limited to 5 items for performance reasons.
-    '''
+    """
 
     def __init__(self, title, uri, service_url, success, has_references, count, items):
         self.title = title
@@ -74,10 +74,10 @@ class ApplicationResponse:
 
     @staticmethod
     def load_from_json(data):
-        '''
+        """
         Load a :class:`ApplicationResponse` from a dictionary or string (that
         will be parsed as json).
-        '''
+        """
         if isinstance(data, str):
             data = json.loads(data)
         items = [Item.load_from_json(a) for a in data['items']] if data['items'] is not None else []
@@ -99,12 +99,12 @@ class ApplicationResponse:
 
 
 class Item:
-    '''
+    """
     A single item that holds a reference to the queried uri.
 
     :param string title: Title of the item.
     :param string uri: Uri of the item.
-    '''
+    """
 
     def __init__(self, title, uri):
         self.title = title
@@ -112,10 +112,10 @@ class Item:
 
     @staticmethod
     def load_from_json(data):
-        '''
+        """
         Load a :class:`Item` from a dictionary ot string (that will be parsed
         as json)
-        '''
+        """
         if isinstance(data, str):
             data = json.loads(data)
         return Item(data['title'], data['uri'])

@@ -4,6 +4,7 @@ Thids module is used when blocking operations on a certain uri
 that might be used in external applications.
 .. versionadded:: 0.4.0
 """
+import logging
 
 from pyramid.httpexceptions import (
     HTTPInternalServerError,
@@ -11,6 +12,8 @@ from pyramid.httpexceptions import (
 from webob import Response
 
 import pyramid_urireferencer
+
+log = logging.getLogger(__name__)
 
 
 def protected_operation(fn):
@@ -76,6 +79,13 @@ def protected_operation(fn):
                 response.content_type = 'application/json'
                 return response
             else:
+                log.error("Urireferencer: Unable to verify the uri {0} is no longer being used. "
+                          "Could not verify with {1}".format(uri, ', '
+                                                             .join(["{0} ({1})".format(app_response.uri,
+                                                                                       app_response.service_url)
+                                                                    for app_response
+                                                                    in registery_response.applications if
+                                                                    not app_response.success])))
                 raise HTTPInternalServerError(
                     detail="Urireferencer: Unable to verify the uri {0} is no longer being used. "
                            "Could not verify with {1}".format(uri, ', '.join([app_response.uri for app_response

@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
 
-from pyramid.config import Configurator
 from pyramid.path import (
     DottedNameResolver
 )
 from zope.interface import Interface
+
 from .referencer import Referencer
 from .renderers import json_renderer
 
+
 class IReferencer(Interface):
     pass
+
 
 def includeme(config):
     """this function adds some configuration for the application"""
@@ -17,6 +19,7 @@ def includeme(config):
     _add_referencer(config.registry)
     config.add_renderer('json_item', json_renderer)
     config.scan()
+
 
 def _add_referencer(registry):
     """
@@ -31,13 +34,14 @@ def _add_referencer(registry):
     registry.registerUtility(r.resolve(ref)(url), IReferencer)
     return registry.queryUtility(IReferencer)
 
+
 def get_referencer(registry):
     """
     Get the referencer class
 
     :rtype: pyramid_urireferencer.referencer.AbstractReferencer
     """
-    #Argument might be a config or request
+    # Argument might be a config or request
     regis = getattr(registry, 'registry', None)
     if regis is None:
         regis = registry
