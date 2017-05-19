@@ -51,7 +51,7 @@ class DummyParent(object):
         }
         config.include('pyramid_urireferencer')
 
-        self.get_uri = lambda: 'https://id.erfgoed.net/resources/1'
+        self.urireferencer_get_uri = lambda: 'https://id.erfgoed.net/resources/1'
 
     @protected_operation
     def protected_dummy(self):
