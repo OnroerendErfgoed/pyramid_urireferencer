@@ -14,7 +14,7 @@ with open(os.path.join(here, 'CHANGES.rst')) as f:
     CHANGES = f.read()
 
 setup(name='pyramid_urireferencer',
-      version='0.5.0',
+      version='0.6.0',
       description='A pyramid plugin to handle referencing external URIs.',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
