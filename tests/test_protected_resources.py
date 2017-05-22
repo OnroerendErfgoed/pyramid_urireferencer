@@ -4,7 +4,7 @@ import unittest
 from pyramid import testing
 from pyramid_urireferencer.protected_resources import protected_operation
 from pyramid_urireferencer.models import RegistryResponse, Item, ApplicationResponse
-from pyramid.httpexceptions import HTTPConflict, HTTPInternalServerError, HTTPNotImplemented
+from pyramid.httpexceptions import HTTPConflict, HTTPInternalServerError
 
 try:
     from unittest.mock import Mock, patch
@@ -52,26 +52,9 @@ class DummyParent(object):
         }
         config.include('pyramid_urireferencer')
 
-
     @protected_operation
     def protected_dummy(self):
         return 'dummy ok'
-
-
-class DummyParentError(object):
-    def __init__(self):
-        self.request = testing.DummyRequest()
-        config = testing.setUp(request=self.request)
-        config.registry.settings = {
-            'urireferencer.referencer': 'test_views.TestReferencerError',
-            'urireferencer.registry_url': 'http://my.registry.org'
-        }
-        config.include('pyramid_urireferencer')
-
-    @protected_operation
-    def protected_dummy(self):
-        return 'dummy ok'
-
 
 
 class ProtectedTests(unittest.TestCase):
