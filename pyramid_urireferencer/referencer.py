@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import abc
+import six
 import requests
 
 import logging
@@ -9,6 +10,7 @@ from .models import RegistryResponse
 log = logging.getLogger(__name__)
 
 
+@six.add_metaclass(abc.ABCMeta)
 class AbstractReferencer:
     """
     This is an abstract class that defines what a Referencer needs to be able to handle.
@@ -20,7 +22,6 @@ class AbstractReferencer:
         * Check if a certain uri is being used in another application by query
           a central registry.
     """
-    __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def get_uri(self, request):
@@ -55,12 +56,12 @@ class AbstractReferencer:
         """
 
 
+@six.add_metaclass(abc.ABCMeta)
 class Referencer(AbstractReferencer):
     """
     This is an implementation of the :class:`AbstractReferencer` that adds a
     generic :meth:`is_referenced` method and a plain :meth:`references` method..
     """
-    __metaclass__ = abc.ABCMeta
 
     def __init__(self, registry_url, **kwargs):
         """

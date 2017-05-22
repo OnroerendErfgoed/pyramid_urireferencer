@@ -73,11 +73,3 @@ class TestReferencer(Referencer):
         return 'https://id.erfgoed.net/resources/1'
 
 
-class TestReferencerError(Referencer):
-    def references(self, uri, request):
-        return None
-
-    def get_uri(self, request):
-        return None
-
-

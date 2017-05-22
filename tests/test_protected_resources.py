@@ -144,15 +144,3 @@ class ProtectedTests(unittest.TestCase):
 
         is_referenced_call = is_referenced_mock.mock_calls[0]
         self.assertEqual('https://id.erfgoed.net/resources/1', is_referenced_call[1][0])
-
-    def test_protected_operation_implementation_error(self):
-        dummy = DummyParentError()
-        self.assertRaises(HTTPNotImplemented, dummy.protected_dummy)
-
-        dummy.request.headers = {"Accept": "application/json"}
-        res = dummy.protected_dummy()
-        self.assertEqual(501, res.status_code)
-        self.assertEqual(res.json_body["message"],
-                         "Unable to retrieve the uri.")
-        self.assertEqual("application/json", res.content_type)
-
