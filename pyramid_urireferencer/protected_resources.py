@@ -8,6 +8,7 @@ import logging
 
 from pyramid.httpexceptions import (
     HTTPInternalServerError,
+    HTTPNotImplemented,
     HTTPConflict)
 from webob import Response
 
@@ -32,6 +33,16 @@ def protected_operation(fn):
     def advice(parent_object, *args, **kw):
         referencer = pyramid_urireferencer.get_referencer(parent_object.request.registry)
         uri = referencer.get_uri(parent_object.request)
+        if uri is None:
+            if parent_object.request.headers.get("Accept", None) == "application/json":
+                return Response(
+                    status='501 Not Implemented',
+                    json_body={"message": "Unable to retrieve the uri."},
+                    content_type='application/json'
+                )
+            else:
+                log.error("Urireferencer: Unable to retrieve the uri.")
+                raise HTTPNotImplemented(detail="Urireferencer: Unable to retrieve the uri.")
         registery_response = referencer.is_referenced(uri)
         if registery_response.has_references:
             if parent_object.request.headers.get("Accept", None) == "application/json":

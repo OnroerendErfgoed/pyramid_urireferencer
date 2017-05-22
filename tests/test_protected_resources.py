@@ -4,7 +4,7 @@ import unittest
 from pyramid import testing
 from pyramid_urireferencer.protected_resources import protected_operation
 from pyramid_urireferencer.models import RegistryResponse, Item, ApplicationResponse
-from pyramid.httpexceptions import HTTPConflict, HTTPInternalServerError
+from pyramid.httpexceptions import HTTPConflict, HTTPInternalServerError, HTTPNotImplemented
 
 try:
     from unittest.mock import Mock, patch
@@ -56,6 +56,22 @@ class DummyParent(object):
     @protected_operation
     def protected_dummy(self):
         return 'dummy ok'
+
+
+class DummyParentError(object):
+    def __init__(self):
+        self.request = testing.DummyRequest()
+        config = testing.setUp(request=self.request)
+        config.registry.settings = {
+            'urireferencer.referencer': 'test_views.TestReferencerError',
+            'urireferencer.registry_url': 'http://my.registry.org'
+        }
+        config.include('pyramid_urireferencer')
+
+    @protected_operation
+    def protected_dummy(self):
+        return 'dummy ok'
+
 
 
 class ProtectedTests(unittest.TestCase):
@@ -128,4 +144,15 @@ class ProtectedTests(unittest.TestCase):
 
         is_referenced_call = is_referenced_mock.mock_calls[0]
         self.assertEqual('https://id.erfgoed.net/resources/1', is_referenced_call[1][0])
+
+    def test_protected_operation_implementation_error(self):
+        dummy = DummyParentError()
+        self.assertRaises(HTTPNotImplemented, dummy.protected_dummy)
+
+        dummy.request.headers = {"Accept": "application/json"}
+        res = dummy.protected_dummy()
+        self.assertEqual(501, res.status_code)
+        self.assertEqual(res.json_body["message"],
+                         "Unable to retrieve the uri.")
+        self.assertEqual("application/json", res.content_type)
 
