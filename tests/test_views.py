@@ -44,7 +44,7 @@ class ViewTests(unittest.TestCase):
         reg_response_success_ref1 = registry_adapter(RegistryResponse(uri, True, False, 0, []), {})
 
         referencer = TestReferencer(url)
-        self.assertIsNone(referencer.references(uri))
+        self.assertIsNone(referencer.references(uri, 'test'))
         response = referencer.is_referenced(uri)
         self.assertIsInstance(response, RegistryResponse)
         self.assertEqual(response.success, False)
@@ -66,5 +66,9 @@ class ViewTests(unittest.TestCase):
 
 
 class TestReferencer(Referencer):
-    def references(self, uri):
+    def references(self, uri, request):
         return None
+
+    def get_uri(self, request):
+        return 'https://id.erfgoed.net/resources/1'
+

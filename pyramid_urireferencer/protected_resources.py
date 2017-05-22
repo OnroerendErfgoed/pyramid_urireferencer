@@ -23,7 +23,6 @@ def protected_operation(fn):
     The parent_object must contain:
         * a request
             * with a registry.queryUtility(IReferencer)
-        * a function named `urireferencer_get_uri` to retrieve the uri
     :raises pyramid.httpexceptions.HTTPConflict: Signals that we don't want to
         delete a certain URI because it's still in use somewhere else.
     :raises pyramid.httpexceptions.HTTPInternalServerError: Raised when we were
@@ -32,7 +31,7 @@ def protected_operation(fn):
 
     def advice(parent_object, *args, **kw):
         referencer = pyramid_urireferencer.get_referencer(parent_object.request.registry)
-        uri = parent_object.urireferencer_get_uri()
+        uri = referencer.get_uri(parent_object.request)
         registery_response = referencer.is_referenced(uri)
         if registery_response.has_references:
             if parent_object.request.headers.get("Accept", None) == "application/json":

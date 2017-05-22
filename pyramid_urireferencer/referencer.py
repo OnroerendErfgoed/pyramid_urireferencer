@@ -13,13 +13,24 @@ class AbstractReferencer:
     """
     This is an abstract class that defines what a Referencer needs to be able to handle.
 
-    It does two things:
-
+    It does three things:
+    
+        * Extract a uri from the request. This is the uri that needs to be checked.
         * Check if a uri is being used in this application and report on this.
         * Check if a certain uri is being used in another application by query
           a central registry.
     """
     __metaclass__ = abc.ABCMeta
+
+    @abc.abstractmethod
+    def get_uri(self, request):
+        """
+        This method extracts a uri from the request. This is the uri that needs to be checked.
+
+        :param request: :class:`pyramid.request.Request` with useful configuration information and connections
+                        of the application (registry, route_url, session) to determine the references
+        :rtype: string uri: URI of the resource we need to check for
+        """
 
     @abc.abstractmethod
     def references(self, uri, request):
