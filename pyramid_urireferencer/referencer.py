@@ -15,12 +15,12 @@ class AbstractReferencer:
     """
     This is an abstract class that defines what a Referencer needs to be able to handle.
 
-    It does three things:
+    It does two things:
     
-        * Extract a uri from the request. This is the uri that needs to be checked.
         * Check if a uri is being used in this application and report on this.
         * Check if a certain uri is being used in another application by query
           a central registry.
+          * this requires a function :meth:`get_uri` to determine the uri of the current request
     """
 
     @abc.abstractmethod
@@ -60,7 +60,7 @@ class AbstractReferencer:
 class Referencer(AbstractReferencer):
     """
     This is an implementation of the :class:`AbstractReferencer` that adds a
-    generic :meth:`is_referenced` method and a plain :meth:`references` method..
+    generic :meth:`is_referenced` method and plains methods: :meth:`references` and :meth:`get_uri` 
     """
 
     def __init__(self, registry_url, **kwargs):
