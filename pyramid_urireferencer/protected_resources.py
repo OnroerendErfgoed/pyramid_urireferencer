@@ -23,8 +23,6 @@ def protected_operation(fn):
     The parent_object must contain:
         * a request
             * with a registry.queryUtility(IReferencer)
-            * with an id parameter in the route path
-        * a uri_template (for example: https://domain/resource/{0}) to form the uri together with the route id parameter
     :raises pyramid.httpexceptions.HTTPConflict: Signals that we don't want to
         delete a certain URI because it's still in use somewhere else.
     :raises pyramid.httpexceptions.HTTPInternalServerError: Raised when we were
@@ -32,9 +30,8 @@ def protected_operation(fn):
     """
 
     def advice(parent_object, *args, **kw):
-        object_id = parent_object.request.matchdict['id']
         referencer = pyramid_urireferencer.get_referencer(parent_object.request.registry)
-        uri = parent_object.uri_template.format(object_id)
+        uri = referencer.get_uri(parent_object.request)
         registery_response = referencer.is_referenced(uri)
         if registery_response.has_references:
             if parent_object.request.headers.get("Accept", None) == "application/json":

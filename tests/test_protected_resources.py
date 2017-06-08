@@ -52,9 +52,6 @@ class DummyParent(object):
         }
         config.include('pyramid_urireferencer')
 
-        self.request.matchdict = {'id': 1}
-        self.uri_template = 'https://id.erfgoed.net/resources/{0}'
-
     @protected_operation
     def protected_dummy(self):
         return 'dummy ok'
@@ -130,4 +127,3 @@ class ProtectedTests(unittest.TestCase):
 
         is_referenced_call = is_referenced_mock.mock_calls[0]
         self.assertEqual('https://id.erfgoed.net/resources/1', is_referenced_call[1][0])
-

@@ -1,7 +1,8 @@
-0.6.0 (2017-??-??)
+0.6.0 (2017-06-08)
 ------------------
 
 - Add some extra logging. (#13)
+- Add required function :meth:`get_uri` to the :class:`AbstractReferencer` to determine the uri of the current request (#8 and #9)
 
 
 0.5.0 (2016-09-28)

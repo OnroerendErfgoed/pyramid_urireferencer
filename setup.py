@@ -4,7 +4,8 @@ from setuptools import setup, find_packages
 
 requires = [
     'pyramid',
-    'requests'
+    'requests',
+    'six'
     ]
 
 here = os.path.abspath(os.path.dirname(__file__))
