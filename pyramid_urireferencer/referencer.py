@@ -60,7 +60,7 @@ class AbstractReferencer:
 class Referencer(AbstractReferencer):
     """
     This is an implementation of the :class:`AbstractReferencer` that adds a
-    generic :meth:`is_referenced` method and plains methods: :meth:`references` and :meth:`get_uri` 
+    generic :meth:`is_referenced` method and plain methods: :meth:`references` and :meth:`get_uri` 
     """
 
     def __init__(self, registry_url, **kwargs):
