@@ -6,8 +6,9 @@ pytest==3.2.5
 pytest-cov==2.5.1
 webtest==2.0.29
 httpretty==0.8.14
-coveralls==1.1
+coveralls==1.2.0
 mock==2.0.0
+
 
 #wheel
 wheel==0.30.0
