@@ -34,7 +34,7 @@ def protected_operation(fn):
         uri = referencer.get_uri(parent_object.request)
         registery_response = referencer.is_referenced(uri)
         if registery_response.has_references:
-            if parent_object.request.headers.get("Accept", None) == "application/json":
+            if 'application/json' in parent_object.request.accept:
                 response = Response()
                 response.status_code = 409
                 response_json = {
@@ -62,7 +62,7 @@ def protected_operation(fn):
                                                                                   registery_response.applications
                                                                                   if app_response.has_references])))
         elif not registery_response.success:
-            if parent_object.request.headers.get("Accept", None) == "application/json":
+            if 'application/json' in parent_object.request.accept:
                 response = Response()
                 response.status_code = 500
                 response_json = {
