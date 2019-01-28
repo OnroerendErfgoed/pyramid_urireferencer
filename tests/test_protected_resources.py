@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 import logging
 import unittest
+
+import pytest
 from pyramid import testing
 from pyramid_urireferencer.protected_resources import protected_operation
+from pyramid_urireferencer.protected_resources \
+    import protected_operation_with_request
 from pyramid_urireferencer.models import RegistryResponse, Item, ApplicationResponse
 from pyramid.httpexceptions import HTTPConflict, HTTPInternalServerError
 
@@ -127,3 +131,92 @@ class ProtectedTests(unittest.TestCase):
 
         is_referenced_call = is_referenced_mock.mock_calls[0]
         self.assertEqual('https://id.erfgoed.net/resources/1', is_referenced_call[1][0])
+
+
+@protected_operation_with_request
+def protected_dummy(request):
+    return 'dummy ok'
+
+
+@patch('pyramid_urireferencer.protected_resources.pyramid_urireferencer'
+       '.Referencer.is_referenced')
+class TestProtectedWithRequest(object):
+    def setUp(self):
+        logging.basicConfig(level=logging.WARN)
+
+    @pytest.fixture()
+    def request(self):
+        request = testing.DummyRequest()
+        config = testing.setUp(request=request)
+        config.registry.settings = {
+            'urireferencer.referencer': 'test_views.TestReferencer',
+            'urireferencer.registry_url': 'http://my.registry.org'
+        }
+        config.include('pyramid_urireferencer')
+        return request
+
+    def test_protected_operation(self, is_referenced_mock, request):
+        is_referenced_mock.return_value = RegistryResponse(
+            'https://id.erfgoed.net/resources/1', True, False, 0, [])
+        protected_dummy(request)
+        is_referenced_call = is_referenced_mock.mock_calls[0]
+        assert 'https://id.erfgoed.net/resources/1' == is_referenced_call[1][0]
+
+    def test_protected_operation_409(self, is_referenced_mock, request):
+        is_referenced_mock.return_value = RegistryResponse(
+            'https://id.erfgoed.net/resources/1', True, True, 10,
+            [get_app(1), get_app(2)])
+        with pytest.raises(HTTPConflict):
+            protected_dummy(request)
+        is_referenced_call = is_referenced_mock.mock_calls[0]
+        assert 'https://id.erfgoed.net/resources/1' == is_referenced_call[1][0]
+
+    def test_protected_operation_409_2(self, is_referenced_mock, request):
+        is_referenced_mock.return_value = RegistryResponse(
+            'https://id.erfgoed.net/resources/1', False, True, 10,
+            [get_app(1), get_app(2)])
+        with pytest.raises(HTTPConflict):
+            protected_dummy(request)
+        is_referenced_call = is_referenced_mock.mock_calls[0]
+        assert 'https://id.erfgoed.net/resources/1' == is_referenced_call[1][0]
+
+    def test_protected_operation_409_json(self, is_referenced_mock, request):
+        request.headers = {"Accept": "application/json"}
+        is_referenced_mock.return_value = RegistryResponse(
+            'https://id.erfgoed.net/resources/1', False, True, 2,
+            [get_app(1), get_app(2)])
+        res = protected_dummy(request)
+        assert 409 == res.status_code
+        msg = ("The uri https://id.erfgoed.net/resources/1 is still in use by "
+               "other applications. A total of 2 references have been found.")
+        assert res.json_body["message"] == msg
+        assert "application/json" == res.content_type
+
+        is_referenced_call = is_referenced_mock.mock_calls[0]
+        assert 'https://id.erfgoed.net/resources/1' == is_referenced_call[1][0]
+
+    def test_protected_operation_500(self, is_referenced_mock, request):
+        is_referenced_mock.return_value = RegistryResponse(
+            'https://id.erfgoed.net/resources/1', False, None, None,
+            [get_app_500()])
+        with pytest.raises(HTTPInternalServerError):
+            protected_dummy(request)
+        is_referenced_call = is_referenced_mock.mock_calls[0]
+        assert 'https://id.erfgoed.net/resources/1' == is_referenced_call[1][0]
+
+    def test_protected_operation_500_json(self, is_referenced_mock, request):
+        request.headers = {"Accept": "application/json"}
+        is_referenced_mock.return_value = RegistryResponse(
+            'https://id.erfgoed.net/resources/1', False, None, None,
+            [get_app_500()])
+        res = protected_dummy(request)
+        assert 500 == res.status_code
+        msg = ("Unable to verify the uri https://id.erfgoed.net/resources/1 "
+               "is no longer being used.")
+        assert res.json_body["message"] == msg
+        errors = ["https://dev-app.onroerenderfgoed.be/: Could not verify the "
+                  "uri is no longer being used."]
+        assert res.json_body["errors"] == errors
+        assert "application/json" == res.content_type
+        is_referenced_call = is_referenced_mock.mock_calls[0]
+        assert 'https://id.erfgoed.net/resources/1' == is_referenced_call[1][0]
