@@ -22,7 +22,7 @@ def _advice(request):
     uri = referencer.get_uri(request)
     registery_response = referencer.is_referenced(uri)
     if registery_response.has_references:
-        if request.headers.get("Accept", None) == "application/json":
+        if 'application/json' in request.accept:
             response = Response()
             response.status_code = 409
             response_json = {
@@ -50,7 +50,7 @@ def _advice(request):
                                                                               registery_response.applications
                                                                               if app_response.has_references])))
     elif not registery_response.success:
-        if request.headers.get("Accept", None) == "application/json":
+        if 'application/json' in request.accept:
             response = Response()
             response.status_code = 500
             response_json = {
