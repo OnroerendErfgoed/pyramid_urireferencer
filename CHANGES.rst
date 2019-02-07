@@ -1,3 +1,9 @@
+0.7.0 (29-01-2019)
+------------------
+
+- Better matching on Accept headers (#18)
+- Nieuwe protected decorator toevoegen die de request niet uit de parent haalt maar rechtstreeks (#50)
+
 0.6.0 (2017-06-08)
 ------------------
 
