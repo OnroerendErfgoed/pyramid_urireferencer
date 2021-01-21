@@ -3,11 +3,6 @@
 import json
 import unittest
 
-try:
-    from unittest.mock import Mock, patch
-except ImportError:
-    from mock import Mock, patch
-
 import httpretty
 from pyramid import testing
 from pyramid.httpexceptions import HTTPBadRequest
@@ -23,6 +18,11 @@ try:
     from urllib import urlencode
 except ImportError:
     from urllib.parse import urlencode
+
+try:
+    from unittest.mock import Mock, patch
+except ImportError:
+    from mock import Mock, patch
 
 
 class ViewTests(unittest.TestCase):
