@@ -2,16 +2,27 @@
 
 import json
 import unittest
+
 import httpretty
 from pyramid import testing
-from pyramid_urireferencer import IReferencer, Referencer, _add_referencer, get_referencer
-from pyramid_urireferencer.views import ReferencesPluginView
+from pyramid.httpexceptions import HTTPBadRequest
+
+from pyramid_urireferencer import IReferencer
+from pyramid_urireferencer import Referencer
+from pyramid_urireferencer import _add_referencer
+from pyramid_urireferencer import get_referencer
 from pyramid_urireferencer.models import RegistryResponse
+from pyramid_urireferencer.views import ReferencesPluginView
 
 try:
     from urllib import urlencode
 except ImportError:
     from urllib.parse import urlencode
+
+try:
+    from unittest.mock import Mock, patch
+except ImportError:
+    from mock import Mock, patch
 
 
 class ViewTests(unittest.TestCase):
@@ -64,6 +75,18 @@ class ViewTests(unittest.TestCase):
         httpretty.disable()  # disable afterwards, so that you will have no problems in code that uses that socket module
         httpretty.reset()
 
+    def test_no_uri(self):
+        request = Mock(params={'uri': ''})
+        view = ReferencesPluginView(request)
+        with self.assertRaises(HTTPBadRequest):
+            view.get_references()
+
+    def test_uri_none(self):
+        request = Mock(params={'uri': None})
+        view = ReferencesPluginView(request)
+        with self.assertRaises(HTTPBadRequest):
+            view.get_references()
+
 
 class TestReferencer(Referencer):
     def references(self, uri, request):
@@ -71,5 +94,3 @@ class TestReferencer(Referencer):
 
     def get_uri(self, request):
         return 'https://id.erfgoed.net/resources/1'
-
-
