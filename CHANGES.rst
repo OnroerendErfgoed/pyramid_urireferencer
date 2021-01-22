@@ -8,7 +8,7 @@
 ------------------
 
 - Add some extra logging. (#13)
-- Add required function :meth:`get_uri` to the :class:`AbstractReferencer` to determine the uri of the current request (#7 and #8)
+- Add required function `get_uri` to the `AbstractReferencer` to determine the uri of the current request (#7 and #8)
 
 
 0.5.0 (2016-09-28)
