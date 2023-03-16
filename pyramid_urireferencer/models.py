@@ -20,7 +20,7 @@ class RegistryResponse:
         self.success = success
         self.has_references = has_references
         self.count = count
-        self.applications = applications
+        self.applications = applications or []
 
     @staticmethod
     def load_from_json(data):
