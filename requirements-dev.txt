@@ -2,7 +2,7 @@
 --requirement requirements.txt
 
 #testing
-pytest==3.4.2
+pytest==4.6.11
 pytest-cov==2.5.1
 webtest==2.0.29
 httpretty==0.8.14
