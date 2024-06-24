@@ -128,7 +128,7 @@ def protected_operation(fn):
 
     @functools.wraps(fn)
     def advice(parent_object, *args, **kw):
-        response = _advice(parent_object.request)
+        response = _advice(parent_object.dummy_request)
         if response is not None:
             return response
         else:

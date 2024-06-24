@@ -28,7 +28,7 @@ def get_app(nr):
             Item(
                 uri="https://dev-besluiten.onroerenderfgoed.be/besluiten/154",
                 title="Vaststelling van de inventaris van het "
-                "Bouwkundig Erfgoed op 28 november 2014",
+                      "Bouwkundig Erfgoed op 28 november 2014",
             )
         )
     a = ApplicationResponse(
@@ -57,9 +57,9 @@ def get_app_500():
 
 class DummyParent(object):
     def __init__(self, accepts="*/*"):
-        self.request = testing.DummyRequest()
-        self.request.accept = AcceptValidHeader(accepts)
-        config = testing.setUp(request=self.request)
+        self.dummy_request = testing.DummyRequest()
+        self.dummy_request.accept = AcceptValidHeader(accepts)
+        config = testing.setUp(request=self.dummy_request)
         config.registry.settings = {
             "urireferencer.referencer": "test_views.TestReferencer",
             "urireferencer.registry_url": "http://my.registry.org",
@@ -215,7 +215,7 @@ class ProtectedTests(unittest.TestCase):
 
 
 @protected_operation_with_request
-def protected_dummy(request):
+def protected_dummy(dummy_request):
     return "dummy ok"
 
 
@@ -228,26 +228,26 @@ class TestProtectedWithRequest(object):
         logging.basicConfig(level=logging.WARN)
 
     @pytest.fixture()
-    def request(self):
-        request = testing.DummyRequest()
-        request.accept = AcceptValidHeader("application/html")
-        config = testing.setUp(request=request)
+    def dummy_request(self):
+        dummy_request = testing.DummyRequest()
+        dummy_request.accept = AcceptValidHeader("application/html")
+        config = testing.setUp(request=dummy_request)
         config.registry.settings = {
             "urireferencer.referencer": "test_views.TestReferencer",
             "urireferencer.registry_url": "http://my.registry.org",
         }
         config.include("pyramid_urireferencer")
-        return request
+        return dummy_request
 
-    def test_protected_operation(self, is_referenced_mock, request):
+    def test_protected_operation(self, is_referenced_mock, dummy_request):
         is_referenced_mock.return_value = RegistryResponse(
             "https://id.erfgoed.net/resources/1", True, False, 0, []
         )
-        protected_dummy(request)
+        protected_dummy(dummy_request)
         is_referenced_call = is_referenced_mock.mock_calls[0]
         assert "https://id.erfgoed.net/resources/1" == is_referenced_call[1][0]
 
-    def test_protected_operation_409(self, is_referenced_mock, request):
+    def test_protected_operation_409(self, is_referenced_mock, dummy_request):
         is_referenced_mock.return_value = RegistryResponse(
             "https://id.erfgoed.net/resources/1",
             True,
@@ -256,11 +256,11 @@ class TestProtectedWithRequest(object):
             [get_app(1), get_app(2)],
         )
         with pytest.raises(HTTPConflict):
-            protected_dummy(request)
+            protected_dummy(dummy_request)
         is_referenced_call = is_referenced_mock.mock_calls[0]
         assert "https://id.erfgoed.net/resources/1" == is_referenced_call[1][0]
 
-    def test_protected_operation_409_2(self, is_referenced_mock, request):
+    def test_protected_operation_409_2(self, is_referenced_mock, dummy_request):
         is_referenced_mock.return_value = RegistryResponse(
             "https://id.erfgoed.net/resources/1",
             False,
@@ -269,12 +269,12 @@ class TestProtectedWithRequest(object):
             [get_app(1), get_app(2)],
         )
         with pytest.raises(HTTPConflict):
-            protected_dummy(request)
+            protected_dummy(dummy_request)
         is_referenced_call = is_referenced_mock.mock_calls[0]
         assert "https://id.erfgoed.net/resources/1" == is_referenced_call[1][0]
 
-    def test_protected_operation_409_json(self, is_referenced_mock, request):
-        request.accept = AcceptValidHeader("application/json")
+    def test_protected_operation_409_json(self, is_referenced_mock, dummy_request):
+        dummy_request.accept = AcceptValidHeader("application/json")
         is_referenced_mock.return_value = RegistryResponse(
             "https://id.erfgoed.net/resources/1",
             False,
@@ -282,7 +282,7 @@ class TestProtectedWithRequest(object):
             2,
             [get_app(1), get_app(2)],
         )
-        res = protected_dummy(request)
+        res = protected_dummy(dummy_request)
         assert 409 == res.status_code
         msg = (
             "The uri https://id.erfgoed.net/resources/1 is still in use by "
@@ -294,21 +294,21 @@ class TestProtectedWithRequest(object):
         is_referenced_call = is_referenced_mock.mock_calls[0]
         assert "https://id.erfgoed.net/resources/1" == is_referenced_call[1][0]
 
-    def test_protected_operation_500(self, is_referenced_mock, request):
+    def test_protected_operation_500(self, is_referenced_mock, dummy_request):
         is_referenced_mock.return_value = RegistryResponse(
             "https://id.erfgoed.net/resources/1", False, None, None, [get_app_500()]
         )
         with pytest.raises(HTTPInternalServerError):
-            protected_dummy(request)
+            protected_dummy(dummy_request)
         is_referenced_call = is_referenced_mock.mock_calls[0]
         assert "https://id.erfgoed.net/resources/1" == is_referenced_call[1][0]
 
-    def test_protected_operation_500_json(self, is_referenced_mock, request):
-        request.accept = AcceptValidHeader("application/json")
+    def test_protected_operation_500_json(self, is_referenced_mock, dummy_request):
+        dummy_request.accept = AcceptValidHeader("application/json")
         is_referenced_mock.return_value = RegistryResponse(
             "https://id.erfgoed.net/resources/1", False, None, None, [get_app_500()]
         )
-        res = protected_dummy(request)
+        res = protected_dummy(dummy_request)
         assert 500 == res.status_code
         msg = (
             "Unable to verify the uri https://id.erfgoed.net/resources/1 "
