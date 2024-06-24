@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*-
+import logging
+
 from pyramid.httpexceptions import HTTPBadRequest
 from pyramid.view import view_config
-from pyramid_urireferencer import get_referencer
 
-import logging
+from pyramid_urireferencer import get_referencer
 
 log = logging.getLogger(__name__)
 
@@ -18,8 +18,12 @@ class RestView(ApplicatieView):
 
 
 class ReferencesPluginView(RestView):
-    @view_config(route_name='references', renderer='json_item', accept='application/json')
+    @view_config(
+        route_name="references", renderer="json_item", accept="application/json"
+    )
     def get_references(self):
-        if not self.request.params.get('uri'):
-            raise HTTPBadRequest('Uri is required.')
-        return get_referencer(self.request.registry).references(self.request.params.get('uri'), self.request)
+        if not self.request.params.get("uri"):
+            raise HTTPBadRequest("Uri is required.")
+        return get_referencer(self.request.registry).references(
+            self.request.params.get("uri"), self.request
+        )

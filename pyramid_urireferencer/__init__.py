@@ -1,12 +1,8 @@
-# -*- coding: utf-8 -*-
-
-from pyramid.path import (
-    DottedNameResolver
-)
+from pyramid.path import DottedNameResolver
 from zope.interface import Interface
 
 from pyramid_urireferencer import protected_resources
-from .referencer import Referencer
+from .referencer import Referencer  # NoQa
 from .renderers import json_renderer
 
 
@@ -16,10 +12,10 @@ class IReferencer(Interface):
 
 def includeme(config):
     """this function adds some configuration for the application"""
-    config.add_route('references', '/references')
+    config.add_route("references", "/references")
     _add_referencer(config.registry)
     config.add_view_deriver(protected_resources.protected_view)
-    config.add_renderer('json_item', json_renderer)
+    config.add_renderer("json_item", json_renderer)
     config.scan()
 
 
@@ -30,8 +26,8 @@ def _add_referencer(registry):
     referencer = registry.queryUtility(IReferencer)
     if referencer is not None:
         return referencer
-    ref = registry.settings['urireferencer.referencer']
-    url = registry.settings['urireferencer.registry_url']
+    ref = registry.settings["urireferencer.referencer"]
+    url = registry.settings["urireferencer.registry_url"]
     r = DottedNameResolver()
     registry.registerUtility(r.resolve(ref)(url), IReferencer)
     return registry.queryUtility(IReferencer)
@@ -44,7 +40,7 @@ def get_referencer(registry):
     :rtype: pyramid_urireferencer.referencer.AbstractReferencer
     """
     # Argument might be a config or request
-    regis = getattr(registry, 'registry', None)
+    regis = getattr(registry, "registry", None)
     if regis is None:
         regis = registry
     return regis.queryUtility(IReferencer)

@@ -1,0 +1,7 @@
+[flake8]
+application_import_names = pyramid_urireferencer, tests
+exclude = .venv,
+          __pycache__,
+import-order-style = pycharm
+max-line-length = 90
+ignore = E402, E405, W503, F403, F405
