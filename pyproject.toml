@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-version = "1.2.0"
+version = "0.8.0"
 name = "pyramid_urireferencer"
 dynamic = ["readme"]
 authors = [
