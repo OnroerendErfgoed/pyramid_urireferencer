@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import json
 
 
@@ -30,12 +28,17 @@ class RegistryResponse:
         """
         if isinstance(data, str):
             data = json.loads(data)
-        applications = [
-            ApplicationResponse.load_from_json(a) for a in data['applications']
-        ] if data['applications'] is not None else []
+        applications = (
+            [ApplicationResponse.load_from_json(a) for a in data["applications"]]
+            if data["applications"] is not None
+            else []
+        )
         return RegistryResponse(
-            data['query_uri'], data['success'],
-            data['has_references'], data['count'], applications
+            data["query_uri"],
+            data["success"],
+            data["has_references"],
+            data["count"],
+            applications,
         )
 
     def to_json(self):
@@ -44,7 +47,7 @@ class RegistryResponse:
             "success": self.success,
             "has_references": self.has_references,
             "count": self.count,
-            "applications": [app.to_json() for app in self.applications]
+            "applications": [app.to_json() for app in self.applications],
         }
 
 
@@ -80,10 +83,19 @@ class ApplicationResponse:
         """
         if isinstance(data, str):
             data = json.loads(data)
-        items = [Item.load_from_json(a) for a in data['items']] if data['items'] is not None else []
+        items = (
+            [Item.load_from_json(a) for a in data["items"]]
+            if data["items"] is not None
+            else []
+        )
         return ApplicationResponse(
-            data['title'], data['uri'], data['service_url'],
-            data['success'], data['has_references'], data['count'], items
+            data["title"],
+            data["uri"],
+            data["service_url"],
+            data["success"],
+            data["has_references"],
+            data["count"],
+            items,
         )
 
     def to_json(self):
@@ -94,7 +106,7 @@ class ApplicationResponse:
             "success": self.success,
             "has_references": self.has_references,
             "count": self.count,
-            "items": [item.to_json() for item in self.items] if self.items else []
+            "items": [item.to_json() for item in self.items] if self.items else [],
         }
 
 
@@ -118,10 +130,7 @@ class Item:
         """
         if isinstance(data, str):
             data = json.loads(data)
-        return Item(data['title'], data['uri'])
+        return Item(data["title"], data["uri"])
 
     def to_json(self):
-        return {
-            "title": self.title,
-            "uri": self.uri
-        }
+        return {"title": self.title, "uri": self.uri}

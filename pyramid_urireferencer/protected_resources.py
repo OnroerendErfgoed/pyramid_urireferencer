@@ -1,15 +1,14 @@
-# -*- coding: utf-8 -*-
 """
 Thids module is used when blocking operations on a certain uri
 that might be used in external applications.
 .. versionadded:: 0.4.0
 """
+
 import functools
 import logging
 
-from pyramid.httpexceptions import (
-    HTTPInternalServerError,
-    HTTPConflict)
+from pyramid.httpexceptions import HTTPConflict
+from pyramid.httpexceptions import HTTPInternalServerError
 from webob import Response
 
 import pyramid_urireferencer
@@ -22,62 +21,96 @@ def _advice(request):
     uri = referencer.get_uri(request)
     registery_response = referencer.is_referenced(uri)
     if registery_response.has_references:
-        if 'application/json' in request.accept:
+        if "application/json" in request.accept:
             response = Response()
             response.status_code = 409
             response_json = {
                 "message": "The uri {0} is still in use by other applications. "
-                           "A total of {1} references have been found.".format(uri, registery_response.count),
+                "A total of {1} references have been found.".format(
+                    uri, registery_response.count
+                ),
                 "errors": [],
-                "registry_response": registery_response.to_json()
+                "registry_response": registery_response.to_json(),
             }
             for app_response in registery_response.applications:
                 if app_response.has_references:
-                    error_string = "{0}: {1} references found, such as {2}" \
-                        .format(app_response.uri,
-                                app_response.count,
-                                ', '.join([i.uri for i in app_response.items]))
+                    error_string = "{0}: {1} references found, such as {2}".format(
+                        app_response.uri,
+                        app_response.count,
+                        ", ".join([i.uri for i in app_response.items]),
+                    )
                     response_json["errors"].append(error_string)
                 response.json_body = response_json
-                response.content_type = 'application/json'
+                response.content_type = "application/json"
             return response
         else:
             raise HTTPConflict(
-                detail="Urireferencer: The uri {0} is still in use by other applications. "
-                       "A total of {1} references have been found "
-                       "in the following applications: {2}".format(uri, registery_response.count,
-                                                                   ', '.join([app_response.title for app_response in
-                                                                              registery_response.applications
-                                                                              if app_response.has_references])))
+                detail="Urireferencer: The uri {0} is still in "
+                "use by other applications. "
+                "A total of {1} references have been found "
+                "in the following applications: {2}".format(
+                    uri,
+                    registery_response.count,
+                    ", ".join(
+                        [
+                            app_response.title
+                            for app_response in registery_response.applications
+                            if app_response.has_references
+                        ]
+                    ),
+                )
+            )
     elif not registery_response.success:
-        if 'application/json' in request.accept:
+        if "application/json" in request.accept:
             response = Response()
             response.status_code = 500
             response_json = {
-                "message": "Unable to verify the uri {0} is no longer being used.".format(uri),
+                "message": "Unable to verify the uri {0} is no longer being used.".format(
+                    uri
+                ),
                 "errors": [],
-                "registry_response": registery_response.to_json()
+                "registry_response": registery_response.to_json(),
             }
             for app_response in registery_response.applications:
                 if not app_response.success:
                     response_json["errors"].append(
-                        "{}: Could not verify the uri is no longer being used.".format(app_response.uri))
+                        "{}: Could not verify the uri is no longer being used.".format(
+                            app_response.uri
+                        )
+                    )
             response.json_body = response_json
-            response.content_type = 'application/json'
+            response.content_type = "application/json"
             return response
         else:
-            log.error("Urireferencer: Unable to verify the uri {0} is no longer being used. "
-                      "Could not verify with {1}".format(uri, ', '
-                                                         .join(["{0} ({1})".format(app_response.uri,
-                                                                                   app_response.service_url)
-                                                                for app_response
-                                                                in registery_response.applications if
-                                                                not app_response.success])))
+            log.error(
+                "Urireferencer: Unable to verify the uri {0} is no longer being used. "
+                "Could not verify with {1}".format(
+                    uri,
+                    ", ".join(
+                        [
+                            "{0} ({1})".format(
+                                app_response.uri, app_response.service_url
+                            )
+                            for app_response in registery_response.applications
+                            if not app_response.success
+                        ]
+                    ),
+                )
+            )
             raise HTTPInternalServerError(
-                detail="Urireferencer: Unable to verify the uri {0} is no longer being used. "
-                       "Could not verify with {1}".format(uri, ', '.join([app_response.uri for app_response
-                                                                          in registery_response.applications if
-                                                                          not app_response.success])))
+                detail="Urireferencer: Unable to verify the uri {0} "
+                "is no longer being used. "
+                "Could not verify with {1}".format(
+                    uri,
+                    ", ".join(
+                        [
+                            app_response.uri
+                            for app_response in registery_response.applications
+                            if not app_response.success
+                        ]
+                    ),
+                )
+            )
 
 
 def protected_operation(fn):
@@ -92,9 +125,10 @@ def protected_operation(fn):
     :raises pyramid.httpexceptions.HTTPInternalServerError: Raised when we were
         unable to check that the URI is no longer being used.
     """
+
     @functools.wraps(fn)
     def advice(parent_object, *args, **kw):
-        response = _advice(parent_object.request)
+        response = _advice(parent_object.dummy_request)
         if response is not None:
             return response
         else:
@@ -128,15 +162,17 @@ def protected_operation_with_request(fn):
 def protected_view(view, info):
     """allows adding `protected=True` to a view_config`"""
 
-    if info.options.get('protected'):
+    if info.options.get("protected"):
+
         def wrapper_view(context, request):
             response = _advice(request)
             if response is not None:
                 return response
             else:
                 return view(context, request)
+
         return wrapper_view
     return view
 
 
-protected_view.options = ('protected',)
+protected_view.options = ("protected",)
