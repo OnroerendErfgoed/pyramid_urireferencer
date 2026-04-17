@@ -85,6 +85,23 @@ class ViewTests(unittest.TestCase):
         with self.assertRaises(HTTPBadRequest):
             view.get_references()
 
+    def test_get_references_success(self):
+        """Test get_references returns references when URI is provided."""
+        self.config.registry.settings["urireferencer.registry_url"] = (
+            "http://my.registry.org"
+        )
+        self.config.registry.settings["urireferencer.referencer"] = (
+            "test_views.TestReferencer"
+        )
+        _add_referencer(self.config.registry)
+
+        request = testing.DummyRequest(params={"uri": "http://test.uri/1"})
+        request.registry = self.config.registry
+        view = ReferencesPluginView(request)
+        result = view.get_references()
+        # TestReferencer.references returns None
+        self.assertIsNone(result)
+
 
 class TestReferencer(Referencer):
     def references(self, uri, request):

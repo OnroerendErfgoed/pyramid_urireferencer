@@ -28,6 +28,7 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+
       - name: Install python requirements
         env:
           HATCH_BUILD_NO_HOOKS: true
@@ -39,4 +40,13 @@ jobs:
           pip install -e .
 
       - name: Python tests
-        run: pytest tests --exitfirst --capture=no -vvv --full-trace
+        run: pytest --cov-report xml:${{ runner.temp }}/coverage.xml --cov=pyramid_urireferencer tests --exitfirst --capture=no -vvv --full-trace
+
+      - name: Get Cover
+        uses: orgoro/coverage@v3.2
+        with:
+          coverageFile: ${{ runner.temp }}/coverage.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          thresholdAll: 0.9
+          thresholdNew: 0.9
+          thresholdModified: 0.9

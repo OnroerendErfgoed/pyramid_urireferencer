@@ -13,6 +13,7 @@ from pyramid_urireferencer.models import Item
 from pyramid_urireferencer.models import RegistryResponse
 from pyramid_urireferencer.protected_resources import protected_operation
 from pyramid_urireferencer.protected_resources import protected_operation_with_request
+from pyramid_urireferencer.protected_resources import protected_view
 
 
 def get_app(nr):
@@ -28,7 +29,7 @@ def get_app(nr):
             Item(
                 uri="https://dev-besluiten.onroerenderfgoed.be/besluiten/154",
                 title="Vaststelling van de inventaris van het "
-                      "Bouwkundig Erfgoed op 28 november 2014",
+                "Bouwkundig Erfgoed op 28 november 2014",
             )
         )
     a = ApplicationResponse(
@@ -323,3 +324,125 @@ class TestProtectedWithRequest(object):
         assert "application/json" == res.content_type
         is_referenced_call = is_referenced_mock.mock_calls[0]
         assert "https://id.erfgoed.net/resources/1" == is_referenced_call[1][0]
+
+
+class MockInfo:
+    """Mock class for view derivation info."""
+
+    def __init__(self, protected=False):
+        self._options = {"protected": protected}
+
+    @property
+    def options(self):
+        return self._options
+
+
+@patch(
+    "pyramid_urireferencer.protected_resources.pyramid_urireferencer"
+    ".Referencer.is_referenced"
+)
+class TestProtectedView:
+    """Tests for the protected_view view deriver."""
+
+    @pytest.fixture()
+    def dummy_request(self):
+        dummy_request = testing.DummyRequest()
+        dummy_request.accept = AcceptValidHeader("application/html")
+        config = testing.setUp(request=dummy_request)
+        config.registry.settings = {
+            "urireferencer.referencer": "test_views.TestReferencer",
+            "urireferencer.registry_url": "http://my.registry.org",
+        }
+        config.include("pyramid_urireferencer")
+        return dummy_request
+
+    def test_protected_view_not_protected(self, is_referenced_mock):
+        """Test that unprotected views are returned unchanged."""
+
+        def dummy_view(context, request):
+            return "view ok"
+
+        info = MockInfo(protected=False)
+        wrapped = protected_view(dummy_view, info)
+        # When not protected, the original view should be returned
+        assert wrapped is dummy_view
+
+    def test_protected_view_protected_no_references(
+        self, is_referenced_mock, dummy_request
+    ):
+        """Test protected view passes through when no references found."""
+        is_referenced_mock.return_value = RegistryResponse(
+            "https://id.erfgoed.net/resources/1", True, False, 0, []
+        )
+
+        def dummy_view(context, request):
+            return "view ok"
+
+        info = MockInfo(protected=True)
+        wrapped = protected_view(dummy_view, info)
+        # When protected, a wrapper should be returned
+        assert wrapped is not dummy_view
+
+        result = wrapped(None, dummy_request)
+        assert result == "view ok"
+
+    def test_protected_view_protected_with_references_html(
+        self, is_referenced_mock, dummy_request
+    ):
+        """Test protected view raises HTTPConflict when references found (HTML)."""
+        is_referenced_mock.return_value = RegistryResponse(
+            "https://id.erfgoed.net/resources/1",
+            True,
+            True,
+            10,
+            [get_app(1), get_app(2)],
+        )
+
+        def dummy_view(context, request):
+            return "view ok"
+
+        info = MockInfo(protected=True)
+        wrapped = protected_view(dummy_view, info)
+
+        with pytest.raises(HTTPConflict):
+            wrapped(None, dummy_request)
+
+    def test_protected_view_protected_with_references_json(
+        self, is_referenced_mock, dummy_request
+    ):
+        """Test protected view returns JSON response when references found."""
+        dummy_request.accept = AcceptValidHeader("application/json")
+        is_referenced_mock.return_value = RegistryResponse(
+            "https://id.erfgoed.net/resources/1",
+            True,
+            True,
+            2,
+            [get_app(1), get_app(2)],
+        )
+
+        def dummy_view(context, request):
+            return "view ok"
+
+        info = MockInfo(protected=True)
+        wrapped = protected_view(dummy_view, info)
+
+        res = wrapped(None, dummy_request)
+        assert res.status_code == 409
+        assert "application/json" == res.content_type
+
+    def test_protected_view_protected_with_500_error(
+        self, is_referenced_mock, dummy_request
+    ):
+        """Test protected view raises HTTPInternalServerError on failure."""
+        is_referenced_mock.return_value = RegistryResponse(
+            "https://id.erfgoed.net/resources/1", False, None, None, [get_app_500()]
+        )
+
+        def dummy_view(context, request):
+            return "view ok"
+
+        info = MockInfo(protected=True)
+        wrapped = protected_view(dummy_view, info)
+
+        with pytest.raises(HTTPInternalServerError):
+            wrapped(None, dummy_request)
