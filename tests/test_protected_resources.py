@@ -1,5 +1,6 @@
 import logging
 import unittest
+from unittest.mock import Mock
 from unittest.mock import patch
 
 import pytest
@@ -238,7 +239,8 @@ class TestProtectedWithRequest(object):
             "urireferencer.registry_url": "http://my.registry.org",
         }
         config.include("pyramid_urireferencer")
-        return dummy_request
+        yield dummy_request
+        testing.tearDown()
 
     def test_protected_operation(self, is_referenced_mock, dummy_request):
         is_referenced_mock.return_value = RegistryResponse(
@@ -326,17 +328,6 @@ class TestProtectedWithRequest(object):
         assert "https://id.erfgoed.net/resources/1" == is_referenced_call[1][0]
 
 
-class MockInfo:
-    """Mock class for view derivation info."""
-
-    def __init__(self, protected=False):
-        self._options = {"protected": protected}
-
-    @property
-    def options(self):
-        return self._options
-
-
 @patch(
     "pyramid_urireferencer.protected_resources.pyramid_urireferencer"
     ".Referencer.is_referenced"
@@ -354,7 +345,8 @@ class TestProtectedView:
             "urireferencer.registry_url": "http://my.registry.org",
         }
         config.include("pyramid_urireferencer")
-        return dummy_request
+        yield dummy_request
+        testing.tearDown()
 
     def test_protected_view_not_protected(self, is_referenced_mock):
         """Test that unprotected views are returned unchanged."""
@@ -362,7 +354,7 @@ class TestProtectedView:
         def dummy_view(context, request):
             return "view ok"
 
-        info = MockInfo(protected=False)
+        info = Mock(options={"protected": False})
         wrapped = protected_view(dummy_view, info)
         # When not protected, the original view should be returned
         assert wrapped is dummy_view
@@ -378,7 +370,7 @@ class TestProtectedView:
         def dummy_view(context, request):
             return "view ok"
 
-        info = MockInfo(protected=True)
+        info = Mock(options={"protected": True})
         wrapped = protected_view(dummy_view, info)
         # When protected, a wrapper should be returned
         assert wrapped is not dummy_view
@@ -401,7 +393,7 @@ class TestProtectedView:
         def dummy_view(context, request):
             return "view ok"
 
-        info = MockInfo(protected=True)
+        info = Mock(options={"protected": True})
         wrapped = protected_view(dummy_view, info)
 
         with pytest.raises(HTTPConflict):
@@ -423,12 +415,15 @@ class TestProtectedView:
         def dummy_view(context, request):
             return "view ok"
 
-        info = MockInfo(protected=True)
+        info = Mock(options={"protected": True})
         wrapped = protected_view(dummy_view, info)
 
         res = wrapped(None, dummy_request)
         assert res.status_code == 409
         assert "application/json" == res.content_type
+        assert res.json_body["message"].startswith("The uri")
+        assert "registry_response" in res.json_body
+        assert len(res.json_body["errors"]) >= 1
 
     def test_protected_view_protected_with_500_error(
         self, is_referenced_mock, dummy_request
@@ -441,7 +436,7 @@ class TestProtectedView:
         def dummy_view(context, request):
             return "view ok"
 
-        info = MockInfo(protected=True)
+        info = Mock(options={"protected": True})
         wrapped = protected_view(dummy_view, info)
 
         with pytest.raises(HTTPInternalServerError):
